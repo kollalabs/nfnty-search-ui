@@ -14,20 +14,38 @@
   <body class="antialiased bg-body text-body font-body">
     <div class="">
         
-      <section><div class="skew skew-top mr-for-radius">
+      <section>
+        <nav class="relative px-6 py-6 bg-gray-900"><div class="flex items-center">
+            <div class="lg:absolute lg:top-1/2 lg:left-1/2 lg:transform lg:-translate-y-1/2 lg:-translate-x-1/2">
+              <a class="text-white text-3xl font-bold leading-none" href="index.html">
+                <img class="h-12" src="img/logo-darkmode.png" alt="" width="auto"></a>
+            </div>
+          <a class="hidden lg:inline-block lg:ml-auto lg:mr-3 py-2 px-6 bg-green-500 hover:bg-green-600 text-sm text-white font-bold rounded-l-xl rounded-t-xl transition duration-200" href="connections.html">Manage Connections</a>
+          </div>
+        </nav><div class="hidden navbar-menu fixed top-0 left-0 bottom-0 w-5/6 max-w-sm z-50">
+          <div class="navbar-backdrop fixed inset-0 bg-gray-800 opacity-25"></div>
+          <nav class="relative flex flex-col py-6 px-6 h-full w-full bg-white border-r overflow-y-auto"><div class="flex items-center mb-8">
+              <a class="mr-auto text-3xl font-bold leading-none" href="#">
+                <img class="h-10" src="atis-assets/logo/atis/atis-mono-black.svg" alt="" width="auto"></a>
+              <button class="navbar-close">
+                <svg class="h-6 w-6 text-gray-400 cursor-pointer hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+          </nav></div>
+      </section>
+      <section>
+        <div class="skew skew-top mr-for-radius">
           <svg class="h-8 md:h-12 lg:h-20 w-full text-gray-900" viewbox="0 0 10 10" preserveaspectratio="none"><polygon fill="currentColor" points="0 0 10 10 0 10"></polygon></svg></div>
         <div class="skew skew-top ml-for-radius">
           <svg class="h-8 md:h-12 lg:h-20 w-full text-gray-900" viewbox="0 0 10 10" preserveaspectratio="none"><polygon fill="currentColor" points="0 10 10 0 10 10"></polygon></svg></div>
-        <div class="py-20 bg-gray-900 radius-for-skewed">
+        <div class="bg-gray-900 radius-for-skewed py-0">
           <div class="container mx-auto px-4">
-            <div class="max-w-xl mx-auto text-center">
+            <div class="max-w-xl mx-auto text-center"></div>
               <a class="mb-6 inline-block text-3xl font-bold leading-none" href="#">
-                <img class="h-12" src="atis-assets/logo/atis/atis-color-sign.svg" alt="" width="auto"></a>
-              <h2 class="mb-2 text-4xl lg:text-5xl text-white font-bold font-heading">Search</h2>
+                </a>
               
-              <form class="mx-auto" action="">
+              <form class="mx-auto pb-5" action="">
                 <div class="max-w-md mx-auto flex flex-wrap items-center">
-                  <input class="flex-grow py-3 px-4 mr-4 text-xs rounded leading-loose" type="email" placeholder="example@shuffle.dev"><button class="w-auto py-2 px-6 rounded-t-xl rounded-l-xl bg-purple-600 hover:bg-purple-700 text-white font-bold leading-loose transition duration-200">Search</button>
+                  <input class="flex-grow py-3 px-4 mr-4 text-xs rounded leading-loose" type="email" placeholder="Search Text"><button class="w-auto py-2 px-6 rounded-t-xl rounded-l-xl bg-purple-600 hover:bg-purple-700 text-white font-bold leading-loose transition duration-200">Search</button>
                 </div>
               </form>
             </div>
