@@ -1,6 +1,6 @@
-# The Shuffle Editor (https://shuffle.dev)
+# Qsearch
 
-NOTE: npm commands overwrite the ./public directory.
+NOTE: This is a demo app created by Kolla to show how our Integration Marketplace can work
 
 ## 1. Getting Started
 
