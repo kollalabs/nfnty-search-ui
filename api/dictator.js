@@ -1,4 +1,5 @@
-module.exports = (req, res) => {
-  const { name = 'World' } = req.query;
-  res.status(200).send(`Hello ${name}!`);
-};
+
+module.exports = async (req, res) => { // this function will be launched when the API is called.
+  var d = process.env.DICTATOR_NAME
+  res.status(200).json({ name: d });
+}
