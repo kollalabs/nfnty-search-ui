@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
   var subscriber
 
   try {
-    subscriber = validateRequest(req)
+    subscriber = await validateRequest(req)
   } catch (err) {
     return res.status(401).json({ error: err.message })
   }
@@ -43,20 +43,24 @@ module.exports = async (req, res) => {
 
 // handler to validate the JWT authentication token
 async function validateRequest (req) {
-  let authHeader = req.headers['authorization']
-  let parts = authHeader.split(' ')
+  const authHeader = req.headers['authorization']
+  const parts = authHeader.split(' ')
 
   if (parts.length !== 2 || parts[0] !== 'Bearer') {
     throw 'invalid authentication header'
   }
 
-  let jwt = parts[1]
+  const jwt = parts[1]
 
   // token, JWTVerifyGetKey, JWTVerifyOptions
-  let { payload, protectedHeader } = await jose.jwtVerify(jwt, JWKS, JWTOptions)
+  const { payload, protectedHeader } = await jose.jwtVerify(
+    jwt,
+    JWKS,
+    JWTOptions
+  )
   // https://github.com/panva/jose/blob/main/docs/interfaces/types.JWTVerifyResult.md
 
-  let subscriber = payload['sub']
+  const subscriber = payload['sub']
 
   return subscriber
 }
