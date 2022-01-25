@@ -40,8 +40,8 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: err.message })
   }
 
-  subscriber = payload['sub']
-  console.log(subscriber)
+  let subscriber = payload['sub']
+
   // lookup jobnimbus token using subscriber
   // make request to kolla for data
   // return the results
