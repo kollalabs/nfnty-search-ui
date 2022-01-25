@@ -17,10 +17,10 @@ module.exports = async (req, res) => {
   // this function will be launched when the API is called.
   try {
     let authHeader = req.headers['authorization']
-    res.status(401).json(authHeader)
-    return
-
     let parts = authHeader.split(' ')
+
+    res.status(401).json(parts)
+    return
 
     if (parts.length !== 2 || parts[0] !== 'Bearer') {
       res.status(401).json({ error: 'invalid authentication header' })
