@@ -1,13 +1,16 @@
 import Button from '@mui/material/Button';
 import React from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+import { Link } from 'react-router-dom';
 
 const LogoutButton = () => {
-  const { logout } = useAuth0();
-
   return (
-    <Button variant={'contained'} onClick={() => logout({ returnTo: window.location.origin })}>
-      Log Out
+    <Button variant={'contained'}>
+      <Link
+        to={'/logout'}
+        style={{ textDecoration: 'inherit', color: 'inherit' }}
+      >
+        Log Out
+      </Link>
     </Button>
   );
 };
