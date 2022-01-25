@@ -1,4 +1,16 @@
-public
 .DS_Store
 node_modules
+
+dist
+dist-ssr
+*.local
+.eslintcache
+
+# Editor files
+.vscode
+.history
+.lh
 .idea
+
+# yarn
+.yarn
