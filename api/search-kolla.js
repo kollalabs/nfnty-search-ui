@@ -1,13 +1,5 @@
 import * as jose from 'jose'
 
-/*
-For dependencies listed in a package.json file at the root of a project, the following behavior is used:
-
-If a package-lock.json file is present in the project, npm install is used.
-Otherwise, yarn is used, by default.
-
-*/
-
 // setup auth0 remote keyset
 const JWKS = jose.createRemoteJWKSet(
   new URL('https://infinitysearch.us.auth0.com/.well-known/jwks.json')
