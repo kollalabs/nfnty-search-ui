@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
   try {
     console.log(req.headers)
 
-    jwt = req.headers['authentication']
+    var jwt = req.headers['authentication']
     res.status(200).json(jwt)
     return
 
