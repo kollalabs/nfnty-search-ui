@@ -32,13 +32,10 @@ module.exports = async (req, res) => {
   // TODO: lookup jobnimbus token using subscriber
   // TODO: make request to kolla for data
   // TODO: return the results
-  var result = {
-    subscriber: subscriber,
-    headers: req.headers
-  }
 
+  sampleResult['subscriber'] = subscriber
   // for now just return the subscriber
-  res.status(200).json(result)
+  res.status(200).json(sampleResult)
 }
 
 // handler to validate the JWT authentication token
@@ -63,4 +60,31 @@ async function validateRequest (req) {
   const subscriber = payload['sub']
 
   return subscriber
+}
+
+const sampleResult = {
+  jobnimbus: {
+    meta: {
+      logo: 'https://api.jobnimbus.kolla.dev/assets/img/logo-main.png',
+      display_name: 'JobNimbus'
+    },
+    results: [
+      {
+        title: 'Contact - Clint Berry',
+        description: 'Clint Berry is a contact in JobNimbus',
+        link: 'https://app.jobnimbus.com/contact/kwqtnapghyhm2cmsdvu5l51',
+        kvdata: {
+          Phone: '8015551234'
+        }
+      },
+      {
+        title: 'Task - Lead Aging Warning',
+        description: 'Lead aging warning for Clinton Sanzota',
+        link: 'https://app.jobnimbus.com/task/kyqf1n6vc8su2wuukyfk0jy',
+        kvdata: {
+          Priority: 'HIGH'
+        }
+      }
+    ]
+  }
 }
