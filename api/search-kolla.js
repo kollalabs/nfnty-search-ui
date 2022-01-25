@@ -18,10 +18,10 @@ module.exports = async (req, res) => {
   try {
     console.log(req.headers)
 
-    res.status(200).json(req.headers['authentication'])
+    jwt = req.headers['authentication']
+    res.status(200).json(jwt)
     return
 
-    jwt = req.headers['authentication']
     jwt = jwt.replace('Bearer ', '')
 
     // https://github.com/panva/jose/blob/main/docs/interfaces/jwt_verify.JWTVerifyOptions.md
