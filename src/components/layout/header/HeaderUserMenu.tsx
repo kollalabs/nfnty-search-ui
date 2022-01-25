@@ -5,7 +5,6 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import React, { useState } from 'react';
 import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
 import { MenuLink, menuUserLinks } from '../../../models/LayoutModels';
 
@@ -44,10 +43,13 @@ const HeaderUserMenu = () => {
         onClose={handleCloseUserMenu}
       >
         {menuUserLinks.map((link: MenuLink, index: number) => (
-          <MenuItem key={index}>
-            <Typography textAlign="center">
-              <Link to={link.url}>{link.displayName}</Link>
-            </Typography>
+          <MenuItem key={index} onClick={handleCloseUserMenu}>
+            <Link
+              to={link.url}
+              style={{ color: 'white', textDecoration: 'none' }}
+            >
+              {link.displayName}
+            </Link>
           </MenuItem>
         ))}
       </Menu>
