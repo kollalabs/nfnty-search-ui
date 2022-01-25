@@ -28,8 +28,8 @@ module.exports = async (req, res) => {
     // https://github.com/panva/jose/blob/main/docs/interfaces/jwt_verify.JWTVerifyOptions.md
     let options = {
       algorithms: ['RS256'],
-      issuer: 'https://infinitysearch.us.auth0.com/',
-      audience: 'https://infinitysearch.xyz'
+      issuer: 'https://infinitysearch.us.auth0.com/'
+      // audience: 'https://infinitysearch.xyz'
     }
 
     // token, JWTVerifyGetKey, JWTVerifyOptions
