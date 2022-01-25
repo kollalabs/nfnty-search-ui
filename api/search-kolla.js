@@ -16,8 +16,14 @@ const JWKS = jose.createRemoteJWKSet(
 module.exports = async (req, res) => {
   // this function will be launched when the API is called.
   try {
-    let jwt = req.headers['authentication']
-    jwt = jwt.replace('Bearer ', '')
+    let authHeader = req.headers['authentication']
+    let parts = authHeader.split(' ')
+
+    if (parts[0] !== 'Bearer') {
+      res.status(401).json({ error: 'invalid authentication header' })
+    }
+
+    let jwt = parts[1]
 
     // https://github.com/panva/jose/blob/main/docs/interfaces/jwt_verify.JWTVerifyOptions.md
     let options = {
