@@ -33,11 +33,7 @@ module.exports = async (req, res) => {
     }
 
     // token, JWTVerifyGetKey, JWTVerifyOptions
-    const { payload, protectedHeader } = await jose.jwtVerify(
-      jwt,
-      JWKS,
-      options
-    )
+    var { payload, protectedHeader } = await jose.jwtVerify(jwt, JWKS, options)
     // https://github.com/panva/jose/blob/main/docs/interfaces/types.JWTVerifyResult.md
   } catch (err) {
     console.log(err)
