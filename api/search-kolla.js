@@ -16,10 +16,11 @@ const JWKS = jose.createRemoteJWKSet(
 module.exports = async (req, res) => {
   // this function will be launched when the API is called.
   try {
-    res.status(200).json(req.headers)
+    console.log(req.headers)
+
+    res.status(200).json(req.headers['authentication'])
     return
 
-    console.log(req.headers)
     jwt = req.headers['authentication']
     jwt = jwt.replace('Bearer ', '')
 
