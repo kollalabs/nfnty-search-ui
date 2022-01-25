@@ -8,7 +8,7 @@ import { DefaultProps } from '../../../models/PropModels';
 const Header = (props: DefaultProps) => {
   return (
     <AppBar position="static">
-      <Container maxWidth={'xl'}>
+      <Container maxWidth={'xl'} sx={{ pb: 3 }}>
         <Toolbar disableGutters>{props.children}</Toolbar>
         <Search />
       </Container>
