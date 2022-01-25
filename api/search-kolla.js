@@ -1,0 +1,35 @@
+// setup link to the remote keyset
+const JWKS = jose.createRemoteJWKSet(
+  new URL('https://infinitysearch.us.auth0.com/.well-known/jwks.json')
+)
+
+module.exports = async (req, res) => {
+  // this function will be launched when the API is called.
+
+  jwt = req.headers['authentication']
+  jwt = jwt.replace('Bearer ', '')
+
+  // https://github.com/panva/jose/blob/main/docs/interfaces/jwt_verify.JWTVerifyOptions.md
+  options = {
+    algorithms: ['RS256'],
+    issuer: 'https://infinitysearch.us.auth0.com/',
+    audience: 'https://infinitysearch.xyz'
+  }
+
+  // token, JWTVerifyGetKey, JWTVerifyOptions
+  const { payload, protectedHeader } = await jose.jwtVerify(jwt, JWKS, options)
+  // https://github.com/panva/jose/blob/main/docs/interfaces/types.JWTVerifyResult.md
+
+  subscriber = payload['sub']
+  console.log(subscriber)
+  // lookup jobnimbus token using subscriber
+  // make request to kolla for data
+  // return the results
+  var result = {
+    subscriber: subscriber,
+    headers: req.headers
+  }
+
+  // for now just return the subscriber
+  res.status(200).json(result)
+}
