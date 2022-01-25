@@ -16,13 +16,13 @@ const JWKS = jose.createRemoteJWKSet(
 module.exports = async (req, res) => {
   // this function will be launched when the API is called.
   try {
-    res.status(401).json(req.headers)
+    res.status(401).json(req.headers['authorization'])
     return
 
-    let authHeader = req.headers['authentication']
+    let authHeader = req.headers['authorization']
     let parts = authHeader.split(' ')
 
-    if (parts[0] !== 'Bearer') {
+    if (parts.length !== 2 || parts[0] !== 'Bearer') {
       res.status(401).json({ error: 'invalid authentication header' })
     }
 
