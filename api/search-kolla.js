@@ -8,43 +8,30 @@ Otherwise, yarn is used, by default.
 
 */
 
-// setup link to the remote keyset
+// setup auth0 remote keyset
 const JWKS = jose.createRemoteJWKSet(
   new URL('https://infinitysearch.us.auth0.com/.well-known/jwks.json')
 )
 
+// https://github.com/panva/jose/blob/main/docs/interfaces/jwt_verify.JWTVerifyOptions.md
+const JWTOptions = {
+  algorithms: ['RS256'],
+  issuer: 'https://infinitysearch.us.auth0.com/'
+  // audience: 'https://infinitysearch.xyz'
+}
+
+// this function will be launched when the API is called.
 module.exports = async (req, res) => {
-  // this function will be launched when the API is called.
+  var subscriber
+
   try {
-    let authHeader = req.headers['authorization']
-    let parts = authHeader.split(' ')
-
-    if (parts.length !== 2 || parts[0] !== 'Bearer') {
-      res.status(401).json({ error: 'invalid authentication header' })
-    }
-
-    let jwt = parts[1]
-
-    // https://github.com/panva/jose/blob/main/docs/interfaces/jwt_verify.JWTVerifyOptions.md
-    let options = {
-      algorithms: ['RS256'],
-      issuer: 'https://infinitysearch.us.auth0.com/'
-      // audience: 'https://infinitysearch.xyz'
-    }
-
-    // token, JWTVerifyGetKey, JWTVerifyOptions
-    var { payload, protectedHeader } = await jose.jwtVerify(jwt, JWKS, options)
-    // https://github.com/panva/jose/blob/main/docs/interfaces/types.JWTVerifyResult.md
+    subscriber = validateRequest(req)
   } catch (err) {
-    console.log(err)
-    return res.status(400).json({ error: err.message })
+    return res.status(401).json({ error: err.message })
   }
-
-  let subscriber = payload['sub']
-
-  // lookup jobnimbus token using subscriber
-  // make request to kolla for data
-  // return the results
+  // TODO: lookup jobnimbus token using subscriber
+  // TODO: make request to kolla for data
+  // TODO: return the results
   var result = {
     subscriber: subscriber,
     headers: req.headers
@@ -52,4 +39,24 @@ module.exports = async (req, res) => {
 
   // for now just return the subscriber
   res.status(200).json(result)
+}
+
+// handler to validate the JWT authentication token
+async function validateRequest (req) {
+  let authHeader = req.headers['authorization']
+  let parts = authHeader.split(' ')
+
+  if (parts.length !== 2 || parts[0] !== 'Bearer') {
+    throw 'invalid authentication header'
+  }
+
+  let jwt = parts[1]
+
+  // token, JWTVerifyGetKey, JWTVerifyOptions
+  let { payload, protectedHeader } = await jose.jwtVerify(jwt, JWKS, JWTOptions)
+  // https://github.com/panva/jose/blob/main/docs/interfaces/types.JWTVerifyResult.md
+
+  let subscriber = payload['sub']
+
+  return subscriber
 }
