@@ -16,6 +16,9 @@ const JWKS = jose.createRemoteJWKSet(
 module.exports = async (req, res) => {
   // this function will be launched when the API is called.
   try {
+    res.status(401).json(req.headers)
+    return
+
     let authHeader = req.headers['authentication']
     let parts = authHeader.split(' ')
 
