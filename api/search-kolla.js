@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
     jwt = jwt.replace('Bearer ', '')
 
     // https://github.com/panva/jose/blob/main/docs/interfaces/jwt_verify.JWTVerifyOptions.md
-    options = {
+    let options = {
       algorithms: ['RS256'],
       issuer: 'https://infinitysearch.us.auth0.com/',
       audience: 'https://infinitysearch.xyz'
