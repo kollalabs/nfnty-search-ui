@@ -19,9 +19,6 @@ module.exports = async (req, res) => {
     let authHeader = req.headers['authorization']
     let parts = authHeader.split(' ')
 
-    res.status(401).json(parts)
-    return
-
     if (parts.length !== 2 || parts[0] !== 'Bearer') {
       res.status(401).json({ error: 'invalid authentication header' })
     }
