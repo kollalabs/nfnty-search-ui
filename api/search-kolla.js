@@ -33,9 +33,9 @@ module.exports = async (req, res) => {
       options
     )
     // https://github.com/panva/jose/blob/main/docs/interfaces/types.JWTVerifyResult.md
-  } catch (error) {
-    console.log(error)
-    return res.status(400).json({ error: error })
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json({ error: err.message })
   }
 
   subscriber = payload['sub']
