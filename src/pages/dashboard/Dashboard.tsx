@@ -44,9 +44,11 @@ const Dashboard = () => {
 
   return (
     <ul>
-      {data.map((results, index) => {
-        return <li key={index}>{results}</li>;
-      })}
+      {data.length > 0 &&
+        data.map((results, index) => {
+          return <li key={index}>{results}</li>;
+        })}
+      {data.length === 0 && <Alert severity={'info'}>No data found</Alert>}
     </ul>
   );
 };
