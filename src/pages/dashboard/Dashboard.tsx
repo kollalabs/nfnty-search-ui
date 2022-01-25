@@ -11,7 +11,7 @@ const Dashboard = () => {
   useDocumentTitle('App Dashboard');
   const { loginWithRedirect, getAccessTokenWithPopup } = useAuth0();
   const { loading, error, data, refresh } = useApi(
-    'https://infinitysearch.com/api/search',
+    'https://infinitysearch.xyz/api/search',
     opts
   );
 
