@@ -11,7 +11,7 @@ const NotFoundPage = () => {
 
   });
 
-  return <h1>404 Page Not Found</h1>;
+  return null;
 };
 
 export default NotFoundPage;

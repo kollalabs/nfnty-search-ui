@@ -1,3 +1,4 @@
+import Button from "@mui/material/Button";
 import React from 'react';
 import useApi from '../../hooks/Api';
 import useDocumentTitle from '../../hooks/DocumentTitle';
@@ -27,11 +28,11 @@ const Dashboard = () => {
 
   if (error !== null) {
     if (error.error === 'login_required') {
-      return <button onClick={() => loginWithRedirect(opts)}>Login</button>;
+      return <Button variant={'contained'} onClick={() => loginWithRedirect(opts)}>Login</Button>;
     }
     if (error.error === 'consent_required') {
       return (
-        <button onClick={getTokenAndTryAgain}>Consent to reading users</button>
+        <Button variant={'contained'} onClick={getTokenAndTryAgain}>Consent to reading users</Button>
       );
     }
     return <Alert severity="error">Oops... {error.message}</Alert>;
