@@ -8,8 +8,8 @@ const JWKS = jose.createRemoteJWKSet(
 // https://github.com/panva/jose/blob/main/docs/interfaces/jwt_verify.JWTVerifyOptions.md
 const JWTOptions = {
   algorithms: ['RS256'],
-  issuer: 'https://infinitysearch.us.auth0.com/'
-  // audience: 'https://infinitysearch.xyz'
+  issuer: 'https://infinitysearch.us.auth0.com/',
+  audience: 'https://infinitysearch.xyz'
 }
 
 // this function will be launched when the API is called.
