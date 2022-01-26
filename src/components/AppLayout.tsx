@@ -5,7 +5,7 @@ import Logout from '../pages/auth/Logout';
 import React from 'react';
 import { AppSearchProvider } from '../contexts/SearchContext';
 
-import Dashboard from '../pages/dashboard/Dashboard';
+import Apps from '../pages/apps/Apps';
 import Footer from './layout/footer/Footer';
 import FooterNavMenu from './layout/footer/FooterNavMenu';
 import Header from './layout/header/Header';
@@ -32,7 +32,7 @@ const AppLayout = () => {
               path={'/apps'}
               element={
                 <RequireAuth>
-                  <Dashboard />
+                  <Apps />
                 </RequireAuth>
               }
             />

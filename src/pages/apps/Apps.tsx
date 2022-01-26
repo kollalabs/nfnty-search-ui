@@ -19,11 +19,11 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 const noData = NoData;
 
-const Dashboard = () => {
+const Apps = () => {
   let keys: string[] = [];
 
   const { query } = useAppSearch();
-  useDocumentTitle('App Dashboard');
+  useDocumentTitle('App Apps');
   const { loginWithRedirect, getAccessTokenWithPopup } = useAuth0();
   const opts = { ...authConfig };
   const { loading, error, data, refresh } = useApi(
@@ -66,7 +66,7 @@ const Dashboard = () => {
   }
 
   const renderData = (keys: any, data: any) => {
-    return keys.map((item: any, index: number) => {
+    return keys.map((item: any) => {
       if (data[item]['results']) {
         return data[item]['results'].map((details: any, index: number) => {
           return (
@@ -84,15 +84,14 @@ const Dashboard = () => {
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Typography variant={'body1'}>
-                  Link: {details?.link || 'N/A'}
+                Link:
+                <Typography variant={'body1'} sx={{ fontFamily: 'Monospace' }}>
+                  {details?.link || 'N/A'}
                 </Typography>
               </AccordionDetails>
             </Accordion>
           );
         });
-      } else {
-        return noData;
       }
     });
   };
@@ -105,4 +104,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Apps;
