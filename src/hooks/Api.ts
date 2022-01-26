@@ -1,7 +1,7 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect, useState } from 'react';
 
-const useApi = (url: string, options: any = {}) => {
+const useApi = (url: string, query: string = '', options: any = {}) => {
   const { getAccessTokenSilently } = useAuth0();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>(null);
@@ -10,9 +10,9 @@ const useApi = (url: string, options: any = {}) => {
 
   useEffect(() => {
     let controller = new AbortController();
-    const { audience, scope, query, ...fetchOptions } = options;
+    const { audience, scope, ...fetchOptions } = options;
 
-    if (query === '') return;
+    if (query.length === 0) return;
 
     (async () => {
       try {
@@ -47,7 +47,7 @@ const useApi = (url: string, options: any = {}) => {
     })();
 
     return () => controller?.abort();
-  }, [refreshIndex]);
+  }, [refreshIndex, query]);
 
   return {
     loading,

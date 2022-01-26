@@ -10,17 +10,14 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
+import { NoData } from '../../components/search/NoData';
 import { useAppSearch } from '../../contexts/SearchContext';
 
 import { authConfig } from '../../config/authConfig';
 import { useApi } from '../../hooks/Api';
 import { useAuth0 } from '@auth0/auth0-react';
 
-const noData = (
-  <Alert key={0} severity={'info'}>
-    No data found
-  </Alert>
-);
+const noData = NoData;
 
 const Dashboard = () => {
   let keys: string[] = [];
@@ -28,9 +25,10 @@ const Dashboard = () => {
   const { query } = useAppSearch();
   useDocumentTitle('App Dashboard');
   const { loginWithRedirect, getAccessTokenWithPopup } = useAuth0();
-  const opts = { query, ...authConfig };
+  const opts = { ...authConfig };
   const { loading, error, data, refresh } = useApi(
     `${window.location.origin}/api/search`,
+    query,
     opts
   );
 
