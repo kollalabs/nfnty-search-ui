@@ -65,16 +65,23 @@ const Dashboard = () => {
         return data[item]['results'].map((details: any, index: number) => {
           console.log('details:', details);
           return (
-            <Accordion key={index}>
+            <Accordion key={index} TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
               >
-                <Typography variant={'body1'}>{details.title}</Typography>
+                <Typography sx={{ width: '33%', flexShrink: 0 }}>
+                  {details?.title || 'N/A'}
+                </Typography>
+                <Typography sx={{ color: 'text.secondary' }}>
+                  {details?.description || 'N/A'}
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Typography variant={'body1'}>{details.description}</Typography>
+                <Typography variant={'body1'}>
+                  Link: {details?.link || 'N/A'}
+                </Typography>
               </AccordionDetails>
             </Accordion>
           );
