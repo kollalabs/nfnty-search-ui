@@ -9,6 +9,8 @@ const useApi = (url: string, options: any = {}) => {
   const [refreshIndex, setRefreshIndex] = useState(0);
 
   useEffect(() => {
+    let controller = new AbortController();
+
     (async () => {
       try {
         const { audience, scope, ...fetchOptions } = options;
@@ -17,9 +19,10 @@ const useApi = (url: string, options: any = {}) => {
 
         if (import.meta.env.PROD) {
           res = await fetch(url, {
+            signal: controller.signal,
             ...fetchOptions,
             headers: {
-              ...fetchOptions.headers,
+              ...fetchOptions?.headers,
               Authorization: `Bearer ${accessToken}`,
             },
           });
@@ -40,6 +43,8 @@ const useApi = (url: string, options: any = {}) => {
         setData(data);
       }
     })();
+
+    return () => controller?.abort();
   }, [refreshIndex]);
 
   return {

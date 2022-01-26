@@ -14,6 +14,7 @@ ReactDOM.render(
       scope={authConfig.scope}
       redirectUri={`${window.location.origin}/auth-callback`}
       useRefreshTokens={true}
+      cacheLocation={'localstorage'}
     >
       <App />
     </Auth0Provider>

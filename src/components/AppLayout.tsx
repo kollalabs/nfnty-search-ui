@@ -4,6 +4,7 @@ import Grid from '@mui/material/Grid';
 import Logout from '../pages/auth/Logout';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 
 import Dashboard from '../pages/dashboard/Dashboard';
 import Footer from './layout/footer/Footer';
@@ -15,11 +16,11 @@ import NotFoundPage from '../pages/common/NotFoundPage';
 import RequireAuth from './auth/RequireAuth';
 
 const AppLayout = () => {
+  const { isAuthenticated } = useAuth0();
+
   return (
     <Container disableGutters>
-      <Header>
-        <HeaderNavMenu />
-      </Header>
+      <Header>{isAuthenticated && <HeaderNavMenu />}</Header>
       <Grid item xs={12}>
         <Routes>
           <Route path={'*'} element={<NotFoundPage />} />
