@@ -2,8 +2,11 @@
 import Container from '@mui/material/Container';
 import React from 'react';
 import { TextField } from '@mui/material';
+import { useAppSearch } from '../../contexts/SearchContext';
 
 const Search = () => {
+  const { query, queryHandler } = useAppSearch();
+
   return (
     <Container maxWidth={'xl'}>
       <TextField
@@ -12,6 +15,8 @@ const Search = () => {
         id="outlined-basic"
         label="Search"
         variant="outlined"
+        onChange={(e) => queryHandler(e?.target?.value)}
+        value={query}
       />
     </Container>
   );
