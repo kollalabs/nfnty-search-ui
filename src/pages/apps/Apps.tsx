@@ -1,18 +1,11 @@
 import Button from '@mui/material/Button';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React from 'react';
-import Typography from '@mui/material/Typography';
 import useDocumentTitle from '../../hooks/DocumentTitle';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Alert,
-  CircularProgress,
-} from '@mui/material';
+import { Alert, CircularProgress } from '@mui/material';
 import { NoData } from '../../components/search/NoData';
 import { useAppSearch } from '../../contexts/SearchContext';
 
+import { AppItems } from './AppsItems';
 import { authConfig } from '../../config/authConfig';
 import { useApi } from '../../hooks/Api';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -58,47 +51,18 @@ const Apps = () => {
         </Button>
       );
     }
-    return <Alert severity="error">Oops... {error.message}</Alert>;
+    if (error.message.toLowerCase() !== 'The user aborted a request') {
+      return <Alert severity="error">Oops... {error.message}</Alert>;
+    }
   }
 
   if (data) {
     keys = Object.keys(data);
   }
 
-  const renderData = (keys: any, data: any) => {
-    return keys.map((item: any) => {
-      if (data[item]['results']) {
-        return data[item]['results'].map((details: any, index: number) => {
-          return (
-            <Accordion key={index} TransitionProps={{ unmountOnExit: true }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <Typography sx={{ width: '33%', flexShrink: 0 }}>
-                  {details?.title || 'N/A'}
-                </Typography>
-                <Typography sx={{ color: 'text.secondary' }}>
-                  {details?.description || 'N/A'}
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                Link:
-                <Typography variant={'body1'} sx={{ fontFamily: 'Monospace' }}>
-                  {details?.link || 'N/A'}
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
-          );
-        });
-      }
-    });
-  };
-
   return (
     <>
-      {keys.length > 0 && renderData(keys, data)}
+      {keys.length > 0 && AppItems(keys, data)}
       {keys.length === 0 && noData}
     </>
   );
