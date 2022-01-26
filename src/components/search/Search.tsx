@@ -7,6 +7,7 @@ const Search = () => {
   return (
     <Container maxWidth={'xl'}>
       <TextField
+        autoFocus
         fullWidth
         id="outlined-basic"
         label="Search"
