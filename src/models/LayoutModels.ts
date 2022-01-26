@@ -24,5 +24,14 @@ const menuUserLinks = [
   { displayName: 'Logout', url: '/logout' },
 ] as MenuLink[];
 
-export { menuNavLinksHeader, menuNavLinksFooter, menuUserLinks };
+const menuUnauthedLinked = [
+  { displayName: 'Login', url: '/login' },
+] as MenuLink[];
+
+export {
+  menuNavLinksHeader,
+  menuNavLinksFooter,
+  menuUserLinks,
+  menuUnauthedLinked,
+};
 export type { MenuLink };

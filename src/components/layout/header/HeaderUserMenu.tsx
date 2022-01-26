@@ -6,10 +6,17 @@ import MenuItem from '@mui/material/MenuItem';
 import React, { useState } from 'react';
 import Tooltip from '@mui/material/Tooltip';
 import { Link } from 'react-router-dom';
-import { MenuLink, menuUserLinks } from '../../../models/LayoutModels';
+import {
+  MenuLink,
+  menuUnauthedLinked,
+  menuUserLinks,
+} from '../../../models/LayoutModels';
 import { resetLinks } from '../../../styles/coreStyles';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const HeaderUserMenu = () => {
+  let menuItems;
+  const { isAuthenticated } = useAuth0();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -20,6 +27,11 @@ const HeaderUserMenu = () => {
     setAnchorElUser(null);
   };
 
+  if (isAuthenticated) {
+    menuItems = menuUserLinks;
+  } else {
+    menuItems = menuUnauthedLinked;
+  }
   return (
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip title="Open settings">
@@ -43,7 +55,7 @@ const HeaderUserMenu = () => {
         open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
       >
-        {menuUserLinks.map((link: MenuLink, index: number) => (
+        {menuItems.map((link: MenuLink, index: number) => (
           <MenuItem key={index} onClick={handleCloseUserMenu}>
             <Link to={link.url} style={resetLinks}>
               {link.displayName}
