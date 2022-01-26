@@ -10,22 +10,31 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
+import { useAppSearch } from '../../contexts/SearchContext';
 
 import { authConfig } from '../../config/authConfig';
 import { useApi } from '../../hooks/Api';
 import { useAuth0 } from '@auth0/auth0-react';
 
+const noData = (
+  <Alert key={0} severity={'info'}>
+    No data found
+  </Alert>
+);
+
 const Dashboard = () => {
   let keys: string[] = [];
-  const opts = { ...authConfig };
 
+  const { query } = useAppSearch();
   useDocumentTitle('App Dashboard');
-
   const { loginWithRedirect, getAccessTokenWithPopup } = useAuth0();
+  const opts = { query, ...authConfig };
   const { loading, error, data, refresh } = useApi(
     `${window.location.origin}/api/search`,
     opts
   );
+
+  if (query.length === 0) return noData;
 
   const getTokenAndTryAgain = async () => {
     await getAccessTokenWithPopup(opts);
@@ -61,9 +70,7 @@ const Dashboard = () => {
   const renderData = (keys: any, data: any) => {
     return keys.map((item: any, index: number) => {
       if (data[item]['results']) {
-        // @ts-ignore
         return data[item]['results'].map((details: any, index: number) => {
-          console.log('details:', details);
           return (
             <Accordion key={index} TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary
@@ -87,11 +94,7 @@ const Dashboard = () => {
           );
         });
       } else {
-        return (
-          <Alert key={index} severity={'info'}>
-            No data found
-          </Alert>
-        );
+        return noData;
       }
     });
   };
@@ -99,7 +102,7 @@ const Dashboard = () => {
   return (
     <>
       {keys.length > 0 && renderData(keys, data)}
-      {keys.length === 0 && <Alert severity={'info'}>No data found</Alert>}
+      {keys.length === 0 && noData}
     </>
   );
 };

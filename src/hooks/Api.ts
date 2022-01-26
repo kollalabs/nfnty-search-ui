@@ -10,10 +10,12 @@ const useApi = (url: string, options: any = {}) => {
 
   useEffect(() => {
     let controller = new AbortController();
+    const { audience, scope, query, ...fetchOptions } = options;
+
+    if (query === '') return;
 
     (async () => {
       try {
-        const { audience, scope, ...fetchOptions } = options;
         const accessToken = await getAccessTokenSilently({ audience, scope });
         let res;
 
