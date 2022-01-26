@@ -57,7 +57,8 @@ async function validateRequest (req) {
 const sampleResult = {
   jobnimbus: {
     meta: {
-      logo: 'https://api.jobnimbus.kolla.dev/assets/img/logo-main.png',
+      logo:
+        'https://3401zs241c1u3z7ulj3z6g7u-wpengine.netdna-ssl.com/wp-content/uploads/2020/10/cropped-5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x-32x32.png',
       display_name: 'JobNimbus'
     },
     results: [
