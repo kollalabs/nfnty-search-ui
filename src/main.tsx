@@ -3,8 +3,7 @@ import ReactDOM from 'react-dom';
 import { Auth0Provider } from '@auth0/auth0-react';
 
 import App from './App';
-import RoutesStatic from './routing/RoutesStatic';
-import { authConfig } from './config/auth';
+import { authConfig } from './config/authConfig';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -15,10 +14,10 @@ ReactDOM.render(
       scope={authConfig.scope}
       redirectUri={`${window.location.origin}/auth-callback`}
       useRefreshTokens={true}
+      cacheLocation={'localstorage'}
     >
       <App />
     </Auth0Provider>
-    <RoutesStatic />
   </React.StrictMode>,
   document.getElementById('root')
 );
