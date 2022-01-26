@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import Tooltip from '@mui/material/Tooltip';
 import { Link } from 'react-router-dom';
 import { MenuLink, menuUserLinks } from '../../../models/LayoutModels';
+import { resetLinks } from '../../../styles/coreStyles';
 
 const HeaderUserMenu = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -44,10 +45,7 @@ const HeaderUserMenu = () => {
       >
         {menuUserLinks.map((link: MenuLink, index: number) => (
           <MenuItem key={index} onClick={handleCloseUserMenu}>
-            <Link
-              to={link.url}
-              style={{ color: 'white', textDecoration: 'none' }}
-            >
+            <Link to={link.url} style={resetLinks}>
               {link.displayName}
             </Link>
           </MenuItem>

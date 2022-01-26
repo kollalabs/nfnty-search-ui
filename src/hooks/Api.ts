@@ -13,16 +13,27 @@ const useApi = (url: string, options: any = {}) => {
       try {
         const { audience, scope, ...fetchOptions } = options;
         const accessToken = await getAccessTokenSilently({ audience, scope });
-        const res = await fetch(url, {
-          ...fetchOptions,
-          headers: {
-            ...fetchOptions.headers,
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        let res;
+
+        if (import.meta.env.PROD) {
+          res = await fetch(url, {
+            ...fetchOptions,
+            headers: {
+              ...fetchOptions.headers,
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+          setData(await res?.json());
+        } else {
+          setData(
+            JSON.parse(
+              '{"jobnimbus":{"meta":{"logo":"https://api.jobnimbus.kolla.dev/assets/img/logo-main.png","display_name":"JobNimbus"},"results":[{"title":"Contact - Clint Berry","description":"Clint Berry is a contact in JobNimbus","link":"https://app.jobnimbus.com/contact/kwqtnapghyhm2cmsdvu5l51","kvdata":{"Phone":"8015551234"}},{"title":"Task - Lead Aging Warning","description":"Lead aging warning for Clinton Sanzota","link":"https://app.jobnimbus.com/task/kyqf1n6vc8su2wuukyfk0jy","kvdata":{"Priority":"HIGH"}}]}}'
+            )
+          );
+        }
+
         setLoading(false);
         setError(null);
-        setData(await res.json());
       } catch (error: any) {
         setLoading(false);
         setError(error);
@@ -39,4 +50,4 @@ const useApi = (url: string, options: any = {}) => {
   };
 };
 
-export default useApi;
+export { useApi };
