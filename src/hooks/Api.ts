@@ -12,7 +12,12 @@ const useApi = (url: string, query: string = '', options: any = {}) => {
     let controller = new AbortController();
     const { audience, scope, ...fetchOptions } = options;
 
-    if (query.length === 0) return;
+    if (query.length === 0) {
+      setData([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
 
     (async () => {
       try {
