@@ -1,94 +1,111 @@
 {
-  "settings": {
-    "react": {
-      "version": "detect"
-    }
-  },
-  "globals": {
-    "JSX": true
+  "root": true,
+  "extends": [
+    "eslint:recommended"
+  ],
+  "ignorePatterns": [
+    "*.config.ts"
+  ],
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "sourceType": "module",
+    "requireConfigFile": false
   },
   "env": {
     "browser": true,
     "es6": true,
-    "jest": true
+    "jest": true,
+    "node": true
   },
-  "ignorePatterns": [
-    "*.config.ts",
-    "api/*.js"
-  ],
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": [
-      "./tsconfig.json"
-    ]
-  },
-  "plugins": [
-    "@typescript-eslint",
-    "jest-dom",
-    "react-hooks",
-    "prettier",
-    "sort-imports-es6-autofix",
-    "sort-exports",
-    "testing-library",
-    "unused-imports"
-  ],
-  "extends": [
-    "eslint:recommended",
-    "plugin:jest-dom/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:react/recommended",
-    "plugin:testing-library/react"
-  ],
-  "rules": {
-    "testing-library/await-async-query": "error",
-    "testing-library/no-await-sync-query": "error",
-    "testing-library/no-debugging-utils": "warn",
-    "jest-dom/prefer-checked": "error",
-    "jest-dom/prefer-enabled-disabled": "error",
-    "jest-dom/prefer-required": "error",
-    "jest-dom/prefer-to-have-attribute": "error",
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
-    "semi": [
-      "error",
-      "always"
-    ],
-    "quotes": [
-      "error",
-      "single",
-      {
-        "avoidEscape": true,
-        "allowTemplateLiterals": true
-      }
-    ],
-    "sort-exports/sort-exports": [
-      "warn",
-      {
-        "sortDir": "asc",
-        "ignoreCase": false,
-        "sortExportKindFirst": "value"
-      }
-    ],
-    "sort-imports-es6-autofix/sort-imports-es6": [
-      "warn",
-      {
-        "ignoreCase": false,
-        "ignoreMemberSort": false,
-        "memberSyntaxSortOrder": [
+  "overrides": [
+    {
+      "files": [
+        "**/*.ts",
+        "**/*.tsx"
+      ],
+      "settings": {
+        "react": {
+          "version": "detect"
+        }
+      },
+      "globals": {
+        "JSX": true
+      },
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": [
+          "./tsconfig.json"
+        ]
+      },
+      "plugins": [
+        "@typescript-eslint",
+        "jest-dom",
+        "react-hooks",
+        "prettier",
+        "sort-imports-es6-autofix",
+        "sort-exports",
+        "testing-library",
+        "unused-imports"
+      ],
+      "extends": [
+        "eslint:recommended",
+        "plugin:jest-dom/recommended",
+        "plugin:react-hooks/recommended",
+        "plugin:react/recommended",
+        "plugin:testing-library/react"
+      ],
+      "rules": {
+        "testing-library/await-async-query": "error",
+        "testing-library/no-await-sync-query": "error",
+        "testing-library/no-debugging-utils": "warn",
+        "jest-dom/prefer-checked": "error",
+        "jest-dom/prefer-enabled-disabled": "error",
+        "jest-dom/prefer-required": "error",
+        "jest-dom/prefer-to-have-attribute": "error",
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+        "semi": [
+          "error",
+          "always"
+        ],
+        "quotes": [
+          "error",
           "single",
-          "multiple",
-          "all",
-          "none"
+          {
+            "avoidEscape": true,
+            "allowTemplateLiterals": true
+          }
+        ],
+        "sort-exports/sort-exports": [
+          "warn",
+          {
+            "sortDir": "asc",
+            "ignoreCase": false,
+            "sortExportKindFirst": "value"
+          }
+        ],
+        "sort-imports-es6-autofix/sort-imports-es6": [
+          "warn",
+          {
+            "ignoreCase": false,
+            "ignoreMemberSort": false,
+            "memberSyntaxSortOrder": [
+              "single",
+              "multiple",
+              "all",
+              "none"
+            ]
+          }
+        ],
+        "unused-imports/no-unused-imports": "warn",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "warn",
+          {
+            "argsIgnorePattern": "^_"
+          }
         ]
       }
-    ],
-    "unused-imports/no-unused-imports": "warn",
-    "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      {
-        "argsIgnorePattern": "^_"
-      }
-    ]
-  }
+    }
+  ]
 }
