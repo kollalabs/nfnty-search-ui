@@ -62,7 +62,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	b, _ := ioutil.ReadAll(resp.Body)
 	if resp.StatusCode >= 300 {
-		http.Error(w, string(b), resp.StatusCode)
+		http.Error(w, string(b)+"\n"+u, resp.StatusCode)
 		return
 	}
 
