@@ -2,7 +2,7 @@ import Button from '@mui/material/Button';
 import React from 'react';
 import useDocumentTitle from '../../hooks/DocumentTitle';
 import { Alert, CircularProgress } from '@mui/material';
-import { NoData } from '../../components/search/NoData';
+import { NoData, PreSearch } from '../../components/search/NoData';
 import { useAppSearch } from '../../contexts/SearchContext';
 
 import { AppItems } from './AppsItems';
@@ -11,6 +11,7 @@ import { useApi } from '../../hooks/Api';
 import { useAuth0 } from '@auth0/auth0-react';
 
 const noData = NoData;
+const preSearch = PreSearch;
 
 const Apps = () => {
   let keys: string[] = [];
@@ -25,7 +26,7 @@ const Apps = () => {
     opts
   );
 
-  if (query.length === 0) return noData;
+  if (query.length === 0) return preSearch;
 
   const getTokenAndTryAgain = async () => {
     await getAccessTokenWithPopup(opts);
