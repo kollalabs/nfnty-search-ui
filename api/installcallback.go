@@ -16,14 +16,20 @@ const (
 )
 
 var (
-	clientID     = os.Getenv("CLIENT_ID")
-	clientSecret = os.Getenv("CLIENT_SECRET")
+	clientID     = os.Getenv("JN_CLIENT_ID")
+	clientSecret = os.Getenv("JN_CLIENT_SECRET")
 )
 
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
+	if clientID == "" || clientSecret == "" {
+		http.Error(w, "callback handler is not configured", http.StatusInternalServerError)
+		return
+	}
+
 	authorizationCode := r.Form.Get("code")
 	if authorizationCode == "" {
 		http.Error(w, "code is required", http.StatusBadRequest)
+		return
 	}
 
 	args := url.Values{}
