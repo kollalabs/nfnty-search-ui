@@ -16,17 +16,25 @@ const (
 )
 
 var (
+	isConfigured = false
 	clientID     = os.Getenv("JN_CLIENT_ID")
 	clientSecret = os.Getenv("JN_CLIENT_SECRET")
 )
 
-func CallbackHandler(w http.ResponseWriter, r *http.Request) {
+func init() {
 	if clientID == "" || clientSecret == "" {
+		return
+	}
+	isConfigured = true
+}
+
+func CallbackHandler(w http.ResponseWriter, r *http.Request) {
+	if !isConfigured {
 		http.Error(w, "callback handler is not configured", http.StatusInternalServerError)
 		return
 	}
 
-	authorizationCode := r.Form.Get("code")
+	authorizationCode := r.URL.Query().Get("code")
 	if authorizationCode == "" {
 		http.Error(w, "code is required", http.StatusBadRequest)
 		return
