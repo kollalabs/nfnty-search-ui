@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 )
 
 // CallbackHandler
@@ -42,20 +43,21 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	args := url.Values{}
-	args.Add("grant_type", "authorization_code")
-	args.Add("client_id", clientID)
-	args.Add("client_secret", clientSecret)
-	args.Add("code", authorizationCode)
-	args.Add("redirect_uri", redirectURI)
+	args.Set("grant_type", "authorization_code")
+	args.Set("client_id", clientID)
+	args.Set("client_secret", clientSecret)
+	args.Set("code", authorizationCode)
+	args.Set("redirect_uri", redirectURI)
 
 	u := tokenURL
 
-	u += "?" + args.Encode()
-	req, err := http.NewRequest(http.MethodPost, u, nil)
+	req, err := http.NewRequest(http.MethodPost, u, strings.NewReader(args.Encode()))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	req.Header.Set("content-type", "application/x-www-form-urlencoded")
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -84,6 +86,6 @@ type tokenResponse struct {
 	RefreshToken string `json:"refresh_token"`
 	IDToken      string `json:"id_token"`
 	Scopes       string `json:"scope"`
-	ExpiresIn    string `json:"expires_in"`
+	ExpiresIn    int64  `json:"expires_in"`
 	TokenType    string `json:"token_type"`
 }
