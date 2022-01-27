@@ -48,7 +48,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	b, _ := ioutil.ReadAll(resp.Body)
 	if resp.StatusCode >= 300 {
-		http.Error(w, string(b), http.StatusInternalServerError)
+		http.Error(w, string(b), resp.StatusCode)
 		return
 	}
 
