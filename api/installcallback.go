@@ -12,6 +12,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"go.einride.tech/aip/resourceid"
+	"google.golang.org/api/option"
 )
 
 // CallbackHandler
@@ -134,9 +135,10 @@ const datastoreTokenKind = "OAuthToken"
 
 func saveToken(ctx context.Context, t *tokenInfo) error {
 
+	cred := option.WithCredentialsJSON([]byte(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")))
 	// Create a datastore client. In a typical application, you would create
 	// a single client which is reused for every datastore operation.
-	dsClient, err := datastore.NewClient(ctx, datastoreProjectID)
+	dsClient, err := datastore.NewClient(ctx, datastoreProjectID, cred)
 	if err != nil {
 		return err
 	}
