@@ -4,13 +4,8 @@
 ARG VARIANT="16-bullseye"
 FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:0-${VARIANT}
 
-# [Optional] Uncomment this section to install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
-
-# [Optional] Uncomment if you want to install an additional version of node using nvm
-# ARG EXTRA_NODE_VERSION=10
-# RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
-
-# [Optional] Uncomment if you want to install more global node modules
-# RUN su node -c "npm install -g <your-package-list-here>"
+RUN ARCH=$(uname -m); \
+  if [ $ARCH = 'aarch64' ]; then ARCH='arm64'; fi; \
+  curl -curl -L "https://go.dev/dl/go1.16.13.linux-${ARCH}.tar.gz" -o /tmp/go.tar.gz; \
+  tar -C /usr/local -xzf /tmp/go.tar.gz; \
+  echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile;
