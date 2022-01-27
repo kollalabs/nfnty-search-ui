@@ -31,6 +31,13 @@ func init() {
 }
 
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
+	errorResponse := r.URL.Query().Get("error")
+	if errorResponse != "" {
+		msg := errorResponse + " " + r.URL.Query().Get("error_description")
+		http.Error(w, msg, http.StatusOK)
+		return
+	}
+
 	if !isConfigured {
 		http.Error(w, "callback handler is not configured", http.StatusInternalServerError)
 		return
