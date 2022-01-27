@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import React from 'react';
-import imgUrl from '/images/atis-assets/logo/qsearch-logo-dark.png'; // this needs to be dynamic
+import imgUrl from '../../../static/images/infinity-search-logo-trimmed.png'; // this needs to be dynamic
 import { Link } from 'react-router-dom';
 
 const NavLogo = ({ narrow }: any) => {
