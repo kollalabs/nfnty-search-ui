@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"strings"
@@ -58,6 +59,8 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	req.Header.Set("content-type", "application/x-www-form-urlencoded")
 
+	out, _ := httputil.DumpRequest(req, true)
+
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -65,7 +68,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if resp.StatusCode >= 300 {
 		b, _ := ioutil.ReadAll(resp.Body)
-		http.Error(w, string(b)+"\n"+u, resp.StatusCode)
+		http.Error(w, string(b)+"\n\n"+string(out), resp.StatusCode)
 		return
 	}
 
