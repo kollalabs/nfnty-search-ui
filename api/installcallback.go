@@ -135,10 +135,14 @@ const datastoreTokenKind = "OAuthToken"
 
 func saveToken(ctx context.Context, t *tokenInfo) error {
 
-	cred := option.WithCredentialsJSON([]byte(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")))
+	credsJSON := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
+	options := []option.ClientOption{}
+	if credsJSON != "" {
+		options = append(options, option.WithCredentialsJSON([]byte(credsJSON)))
+	}
 	// Create a datastore client. In a typical application, you would create
 	// a single client which is reused for every datastore operation.
-	dsClient, err := datastore.NewClient(ctx, datastoreProjectID, cred)
+	dsClient, err := datastore.NewClient(ctx, datastoreProjectID, options...)
 	if err != nil {
 		return err
 	}
