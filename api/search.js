@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
   let subscriber;
 
   if (req.method == "OPTIONS") {
-    return res.status(200);
+    return res.status(200).send("");
   }
 
   try {
