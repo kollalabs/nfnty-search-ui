@@ -1,7 +1,7 @@
 package api
 
 import (
-	"fmt"
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -12,7 +12,8 @@ import (
 // https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2
 // Handles steps 3, 4, and 5 of the Authorization code flow
 const (
-	tokenURL = "https://k-job-nimbus.us.auth0.com/oauth/token"
+	tokenURL    = "https://k-job-nimbus.us.auth0.com/oauth/token"
+	redirectURI = "http://127.0.0.1:3000"
 )
 
 var (
@@ -41,10 +42,11 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	args := url.Values{}
+	args.Add("grant_type", "authorization_code")
 	args.Add("client_id", clientID)
 	args.Add("client_secret", clientSecret)
-	args.Add("grant_type", "authorization_code")
 	args.Add("code", authorizationCode)
+	args.Add("redirect_uri", redirectURI)
 
 	u := tokenURL
 
@@ -60,13 +62,28 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	b, _ := ioutil.ReadAll(resp.Body)
 	if resp.StatusCode >= 300 {
+		b, _ := ioutil.ReadAll(resp.Body)
 		http.Error(w, string(b)+"\n"+u, resp.StatusCode)
 		return
 	}
 
-	fmt.Println(string(b))
+	var tok tokenResponse
+	err = json.NewDecoder(resp.Body).Decode(&tok)
+	if err != nil {
+		http.Error(w, err.Error(), resp.StatusCode)
+		return
+	}
 
-	w.Write(b)
+	_ = json.NewEncoder(w).Encode(tok)
+
+}
+
+type tokenResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	IDToken      string `json:"id_token"`
+	Scopes       string `json:"scope"`
+	ExpiresIn    string `json:"expires_in"`
+	TokenType    string `json:"token_type"`
 }
