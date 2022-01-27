@@ -13,7 +13,8 @@
     "jest": true
   },
   "ignorePatterns": [
-    "*.config.ts"
+    "*.config.ts",
+    "api/*.js"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
