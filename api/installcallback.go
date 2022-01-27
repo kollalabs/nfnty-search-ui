@@ -22,6 +22,9 @@ var (
 
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	authorizationCode := r.Form.Get("code")
+	if authorizationCode == "" {
+		http.Error(w, "code is required", http.StatusBadRequest)
+	}
 
 	args := url.Values{}
 	args.Add("client_id", clientID)
