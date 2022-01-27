@@ -1,3 +1,3 @@
 module github.com/kollalabs/nfnty-search-ui
 
-go 1.17
+go 1.16
