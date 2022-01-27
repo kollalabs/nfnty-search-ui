@@ -12,13 +12,16 @@ import (
 // https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2
 // Handles steps 3, 4, and 5 of the Authorization code flow
 const (
-	tokenURL     = "https://k-job-nimbus.us.auth0.com/oauth/token"
+	tokenURL = "https://k-job-nimbus.us.auth0.com/oauth/token"
+)
+
+var (
 	clientID     = os.Getenv("CLIENT_ID")
 	clientSecret = os.Getenv("CLIENT_SECRET")
 )
 
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
-	authorizationCode := r.Get("code")
+	authorizationCode := r.Form.Get("code")
 
 	args := url.Values{}
 	args.Add("client_id", clientID)
@@ -29,7 +32,11 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	u := tokenURL
 
 	u += "?" + args.Encode()
-	req := http.NewRequest(http.MethodPost, u, nil)
+	req, err := http.NewRequest(http.MethodPost, u, nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
