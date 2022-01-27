@@ -14,7 +14,7 @@ const Search = () => {
         fullWidth
         id="outlined-basic"
         label="Search"
-        variant="outlined"
+        variant={'filled'}
         onChange={(e) => queryHandler(e?.target?.value)}
         value={query}
       />

@@ -21,7 +21,7 @@ const Apps = () => {
   const { loginWithRedirect, getAccessTokenWithPopup } = useAuth0();
   const opts = { ...authConfig };
   const { loading, error, data, refresh } = useApi(
-    `${window.location.origin}/api/search`,
+    `${authConfig.audience}/api/search`,
     query,
     opts
   );

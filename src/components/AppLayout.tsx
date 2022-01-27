@@ -1,4 +1,5 @@
 import AuthCallback from './auth/AuthCallback';
+import Connections from '../pages/connections/Connections';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Logout from '../pages/auth/Logout';
@@ -33,6 +34,14 @@ const AppLayout = () => {
               element={
                 <RequireAuth>
                   <Apps />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path={'/connections'}
+              element={
+                <RequireAuth>
+                  <Connections />
                 </RequireAuth>
               }
             />
