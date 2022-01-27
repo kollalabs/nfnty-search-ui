@@ -13,8 +13,7 @@ import (
 // https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2
 // Handles steps 3, 4, and 5 of the Authorization code flow
 const (
-	tokenURL    = "https://k-job-nimbus.us.auth0.com/oauth/token"
-	redirectURI = "http://127.0.0.1:3000"
+	tokenURL = "https://k-job-nimbus.us.auth0.com/oauth/token"
 )
 
 var (
@@ -47,7 +46,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	args.Set("client_id", clientID)
 	args.Set("client_secret", clientSecret)
 	args.Set("code", authorizationCode)
-	args.Set("redirect_uri", redirectURI)
+	args.Set("redirect_uri", reconstructRedirectURI(r))
 
 	u := tokenURL
 
@@ -88,4 +87,19 @@ type tokenResponse struct {
 	Scopes       string `json:"scope"`
 	ExpiresIn    int64  `json:"expires_in"`
 	TokenType    string `json:"token_type"`
+}
+
+func reconstructRedirectURI(r *http.Request) string {
+	scheme := r.URL.Scheme
+	if scheme == "" {
+		scheme = os.Getenv("JN_REDIRECT_URI_SCHEME")
+	}
+
+	u := url.URL{
+		Scheme: scheme,
+		Host:   r.Host,
+		Path:   r.URL.Path,
+	}
+
+	return u.String()
 }
