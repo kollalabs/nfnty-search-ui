@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -9,17 +8,14 @@ import (
 	"net/url"
 	"os"
 	"strings"
-
-	"cloud.google.com/go/datastore"
-	"go.einride.tech/aip/resourceid"
-	"google.golang.org/api/option"
 )
 
 // CallbackHandler
 // https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2
 // Handles steps 3, 4, and 5 of the Authorization code flow
 const (
-	tokenURL = "https://k-job-nimbus.us.auth0.com/oauth/token"
+	tokenURL    = "https://k-job-nimbus.us.auth0.com/oauth/token"
+	userInfoURL = "https://infinitysearch.us.auth0.com/userinfo"
 
 	datastoreProjectID = "infinity-search-339422"
 )
@@ -55,6 +51,18 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	authorizationCode := r.URL.Query().Get("code")
 	if authorizationCode == "" {
 		http.Error(w, "code is required", http.StatusBadRequest)
+		return
+	}
+
+	target := r.URL.Query().Get("target")
+	if target == "" {
+		http.Error(w, "target is required", http.StatusBadRequest)
+		return
+	}
+
+	sub := r.URL.Query().Get("sub")
+	if sub == "" {
+		http.Error(w, "sub is required", http.StatusBadRequest)
 		return
 	}
 
@@ -95,7 +103,9 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = saveToken(ctx, &tok)
+	tok.ConnectorName = target
+
+	err = saveUserAppToken(ctx, sub, &tok)
 	if err != nil {
 		http.Error(w, err.Error(), resp.StatusCode)
 		return
@@ -113,6 +123,7 @@ type tokenInfo struct {
 	ExpiresIn    int64  `json:"expires_in"`
 	TokenType    string `json:"token_type"`
 
+	ConnectorName      string `json:"connector_name"`
 	InfinitySearchUser string `json:"infinity_search_user,omitempty"`
 }
 
@@ -129,33 +140,4 @@ func reconstructRedirectURI(r *http.Request) string {
 	}
 
 	return u.String()
-}
-
-const datastoreTokenKind = "OAuthToken"
-
-func saveToken(ctx context.Context, t *tokenInfo) error {
-
-	credsJSON := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
-	options := []option.ClientOption{}
-	if credsJSON != "" {
-		options = append(options, option.WithCredentialsJSON([]byte(credsJSON)))
-	}
-	// Create a datastore client. In a typical application, you would create
-	// a single client which is reused for every datastore operation.
-	dsClient, err := datastore.NewClient(ctx, datastoreProjectID, options...)
-	if err != nil {
-		return err
-	}
-	defer dsClient.Close()
-
-	key := resourceid.NewSystemGeneratedBase32()
-
-	// kind, name, parent
-	k := datastore.NameKey(datastoreTokenKind, key, nil)
-
-	if _, err := dsClient.Put(ctx, k, t); err != nil {
-		return err
-	}
-
-	return nil
 }

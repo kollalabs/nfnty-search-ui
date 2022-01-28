@@ -16,3 +16,7 @@ dist-ssr
 .yarn
 
 .vercel
+
+# local dev files 
+/api/goserver/credentials
+/api/goserver/goserver/goserver
