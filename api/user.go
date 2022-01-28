@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"cloud.google.com/go/datastore"
@@ -80,4 +81,9 @@ func saveUserAppToken(ctx context.Context, sub string, t *tokenInfo) error {
 	}
 
 	return nil
+}
+
+// placeholder to make vercel happy
+func UserHandler(w http.ResponseWriter, r *http.Request) {
+
 }
