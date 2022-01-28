@@ -30,6 +30,7 @@ func ConnectorsHandler(w http.ResponseWriter, r *http.Request) {
 	sub, err := isAuthed(ctx, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	if sub != "" {
 		// merge connected
