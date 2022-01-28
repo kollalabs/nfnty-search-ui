@@ -1,20 +1,21 @@
 package api
 
 import (
-	"errors"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 )
 
-// TODO: move into a file that is loaded at startup?
-var configs = map[string]struct {
+type authConfig struct {
 	AuthorizationURL string
 	ClientID         string
 	Audience         string
 	Scopes           []string
-}{
+}
+
+// TODO: move into a file that is loaded at startup?
+var configs = map[string]authConfig{
 	"job-nimbus": {
 		AuthorizationURL: "https://k-job-nimbus.us.auth0.com/authorize",
 		ClientID:         os.Getenv("JN_CLIENT_ID"),
@@ -32,7 +33,13 @@ var configs = map[string]struct {
 // oauth authorization page
 func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
 
-	dest, err := installURL(r)
+	cfg, ok := configs[r.URL.Query().Get("target")]
+	if !ok {
+		http.Error(w, "unknown connector target", http.StatusBadRequest)
+		return
+	}
+
+	dest, err := installURL(r, cfg)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -42,11 +49,7 @@ func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func installURL(r *http.Request) (string, error) {
-	cfg, ok := configs[r.URL.Query().Get("target")]
-	if !ok {
-		return "", errors.New("unknown connector target")
-	}
+func installURL(r *http.Request, cfg authConfig) (string, error) {
 
 	sub, err := r.Cookie("sub")
 	if err != nil || sub.Value == "" {

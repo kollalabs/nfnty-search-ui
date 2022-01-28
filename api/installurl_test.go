@@ -12,9 +12,8 @@ func TestInstallURL(t *testing.T) {
 
 	cfg := configs["job-nimbus"]
 	cfg.ClientID = "abc123"
-	configs["job-nimbus"] = cfg
 
-	dst, err := installURL(r)
+	dst, err := installURL(r, cfg)
 	if err != nil {
 		t.Fatalf("unexpected error: %s\n", err)
 	}
