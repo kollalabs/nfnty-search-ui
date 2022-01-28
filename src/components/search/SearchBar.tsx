@@ -3,7 +3,7 @@ import Container from '@mui/material/Container';
 import React from 'react';
 import { TextField } from '@mui/material';
 import { useAppSearch } from '../../contexts/SearchContext';
-import { useKeyPress } from '../../hooks/Utility';
+import { useKeyPress } from '../../hooks/Utilities';
 
 const SearchBar = () => {
   const { query, queryHandler } = useAppSearch();

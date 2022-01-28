@@ -1,34 +1,40 @@
 import Button from '@mui/material/Button';
 import React from 'react';
-import SearchBar from '../../components/search/SearchBar';
-import useDocumentTitle from '../../hooks/DocumentTitle';
 import { Alert, CircularProgress } from '@mui/material';
-import { NoData, PreSearch } from '../../components/search/NoData';
-import { useAppSearch } from '../../contexts/SearchContext';
+import { useAuth0 } from '@auth0/auth0-react';
 
+import SearchBar from '../../components/search/SearchBar';
 import useApi from '../../hooks/Api';
+import useAuthCheck from '../../hooks/AuthCheck';
+import useDocumentTitle from '../../hooks/DocumentTitle';
+import { Navigate } from 'react-router-dom';
+import { NoData, PreSearch } from '../../components/search/NoData';
 import { SearchItems } from './SearchItems';
 import { authConfig } from '../../config/authConfig';
-import { useAuth0 } from '@auth0/auth0-react';
-import { useDebounce } from '../../hooks/Utility';
+import { useAppSearch } from '../../contexts/SearchContext';
+import { useDebounce } from '../../hooks/Utilities';
 
 const noData = NoData;
 const preSearch = PreSearch;
 
 const Search = () => {
   let keys: string[] = [];
-  const { query } = useAppSearch();
   const opts = { ...authConfig };
 
+  useAuthCheck();
+  const { query } = useAppSearch();
   const debouncedValue = useDebounce<string>(query, 200);
   useDocumentTitle('App Search');
   const { isAuthenticated, loginWithRedirect, getAccessTokenWithPopup } = useAuth0();
   const { loading, error, data, refresh } = useApi(
-    `${authConfig.audience}/api/search`,
+    `${authConfig.audience}/api/search?text=`,
     debouncedValue,
     opts
   );
 
+  if (!isAuthenticated) {
+    <Navigate to="/login" />;
+  }
   const getTokenAndTryAgain = async () => {
     await getAccessTokenWithPopup(opts);
     refresh();
@@ -51,12 +57,13 @@ const Search = () => {
         );
       }
       if (error.message.toLowerCase() !== 'The user aborted a request') {
-        return <Alert severity="error">Oops... {error.message}</Alert>;
+        return <Alert severity="error">Drat... {error.message}</Alert>;
       }
     }
   };
 
   if (data) {
+    // companies...
     keys = Object.keys(data);
   }
 

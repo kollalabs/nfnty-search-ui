@@ -1,7 +1,10 @@
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React from 'react';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 
 const SearchItems = (keys: any, data: any) => {
   return keys.map((item: any) => {
@@ -22,10 +25,16 @@ const SearchItems = (keys: any, data: any) => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              Link:
-              <Typography variant={'body1'} sx={{ fontFamily: 'Monospace' }}>
-                {details?.link || 'N/A'}
-              </Typography>
+              <TextField
+                sx={{ fontFamily: 'Monospace' }}
+                aria-readonly
+                disabled
+                fullWidth={true}
+                id="outlined-basic"
+                label="Search"
+                variant={'filled'}
+                value={details?.link || 'N/A'}
+              />
             </AccordionDetails>
           </Accordion>
         );

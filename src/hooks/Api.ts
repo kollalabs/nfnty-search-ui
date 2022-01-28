@@ -1,7 +1,7 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { useCallback, useEffect, useState } from 'react';
 
-const useApi = (url: string, query: string = '', options: any = {}) => {
+const useApi = (url: string, query?: string, options: any = {}) => {
   const { getAccessTokenSilently } = useAuth0();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
@@ -18,7 +18,7 @@ const useApi = (url: string, query: string = '', options: any = {}) => {
         let res;
 
         if (query.startsWith('cl')) {
-          res = await fetch(url, {
+          res = await fetch(`${url}${query}`, {
             signal: controller.signal,
             ...fetchOptions,
             headers: {
@@ -45,7 +45,7 @@ const useApi = (url: string, query: string = '', options: any = {}) => {
     setLoading(false);
     setError(null);
 
-    if (query.length === 0) {
+    if (query && query.length === 0) {
       setData([]);
       setLoading(false);
       setError(null);
