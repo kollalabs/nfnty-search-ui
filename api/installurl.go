@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"os"
@@ -32,6 +33,7 @@ var configs = map[string]authConfig{
 // Redirects the user to either the login page or sends them to the providers
 // oauth authorization page
 func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(tokenURL)
 
 	cfg, ok := configs[r.URL.Query().Get("target")]
 	if !ok {
