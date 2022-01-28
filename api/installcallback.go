@@ -14,7 +14,6 @@ import (
 // https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2
 // Handles steps 3, 4, and 5 of the Authorization code flow
 const (
-	tokenURL    = "https://k-job-nimbus.us.auth0.com/oauth/token"
 	userInfoURL = "https://infinitysearch.us.auth0.com/userinfo"
 
 	datastoreProjectID = "infinity-search-339422"
@@ -60,6 +59,12 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cfg, ok := configs[target]
+	if !ok {
+		http.Error(w, "unknown target", http.StatusBadRequest)
+		return
+	}
+
 	sub := r.URL.Query().Get("sub")
 	if sub == "" {
 		http.Error(w, "sub is required", http.StatusBadRequest)
@@ -73,7 +78,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	args.Set("code", authorizationCode)
 	args.Set("redirect_uri", reconstructRedirectURI(r))
 
-	u := tokenURL
+	u := cfg.AuthInfo.Endpoint.TokenURL
 
 	req, err := http.NewRequest(http.MethodPost, u, strings.NewReader(args.Encode()))
 	if err != nil {
