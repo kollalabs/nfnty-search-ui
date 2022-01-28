@@ -107,7 +107,7 @@ func isAuthed(ctx context.Context, r *http.Request) (string, error) {
 }
 
 func tokenFromRequest(r *http.Request) string {
-	header := r.Header.Get("Authentication")
+	header := r.Header.Get("Authorization")
 	prefix := "Bearer "
 	if !strings.HasPrefix(header, prefix) {
 		return ""
