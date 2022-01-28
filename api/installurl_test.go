@@ -10,7 +10,7 @@ func TestInstallURL(t *testing.T) {
 	r := httptest.NewRequest(http.MethodGet, "http://infinitysearch.xyz/api/installurl?target=job-nimbus", nil)
 	r.AddCookie(&http.Cookie{Name: "sub", Value: "sub_id"})
 
-	cfg := configs["job-nimbus"]
+	cfg := configs["job-nimbus"].AuthInfo
 	cfg.ClientID = "abc123"
 
 	dst, err := installURL(r, cfg)
