@@ -7,24 +7,44 @@ import (
 	"strings"
 )
 
-type authConfig struct {
+type connectorConfig struct {
+	ConnectorInfo connectorInfo
+	AuthInfo      authInfo
+}
+
+type connectorInfo struct {
+	Name        string
+	DisplayName string
+	Logo        string
+	LogoSmall   string
+}
+
+type authInfo struct {
 	AuthorizationURL string
 	ClientID         string
 	Audience         string
 	Scopes           []string
 }
 
-// TODO: move into a file that is loaded at startup?
-var configs = map[string]authConfig{
-	"job-nimbus": {
-		AuthorizationURL: "https://k-job-nimbus.us.auth0.com/authorize",
-		ClientID:         os.Getenv("JN_CLIENT_ID"),
-		Audience:         "https://data.job-nimbus.program.kolla.dev",
-		Scopes: []string{
-			"openid",
-			"offline_access",
-			"read:contacts",
-			"read:schedules",
+// TODO: move into a file that is loaded at startup
+var configs = map[string]connectorConfig{
+	"connectors/job-nimbus": {
+		ConnectorInfo: connectorInfo{
+			Name:        "connectors/job-nimbus",
+			DisplayName: "Job Nimbus",
+			Logo:        "",
+			LogoSmall:   "",
+		},
+		AuthInfo: authInfo{
+			AuthorizationURL: "https://k-job-nimbus.us.auth0.com/authorize",
+			ClientID:         os.Getenv("JN_CLIENT_ID"),
+			Audience:         "https://data.job-nimbus.program.kolla.dev",
+			Scopes: []string{
+				"openid",
+				"offline_access",
+				"read:contacts",
+				"read:schedules",
+			},
 		},
 	},
 }
@@ -39,7 +59,7 @@ func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dest, err := installURL(r, cfg)
+	dest, err := installURLWithAuthRedirect(r, cfg)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -49,7 +69,7 @@ func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func installURL(r *http.Request, cfg authConfig) (string, error) {
+func installURLWithAuthRedirect(r *http.Request, cfg connectorConfig) (string, error) {
 
 	sub, err := r.Cookie("sub")
 	if err != nil || sub.Value == "" {
@@ -57,19 +77,30 @@ func installURL(r *http.Request, cfg authConfig) (string, error) {
 		v.Set("redirect_uri", r.URL.String())
 		return "/login?" + v.Encode(), nil
 	}
+	return installURLNoAuthRedirect(cfg, sub.Value)
+}
 
+func installURLNoAuthRedirect(cfg connectorConfig, sub string) (string, error) {
 	// make sure that we have a cookie with the user's ID in it so we can link the tokens together
+	a := cfg.AuthInfo
 
-	//https://k-job-nimbus.us.auth0.com/authorize?response_type=code&client_id=eeU34NxSzxcYHKIzf6UzKWxI9ICwDZzN&redirect_uri=https://infinitysearch.xyz/api/installcallback&audience=https://data.job-nimbus.program.kolla.dev&state=hiddenstate&scope=openid%20offline_access%20read:contacts%20read:schedules&prompt=consent
+	rv := url.Values{}
+
+	// TODO: pass this information through via a secure channel instead of plaintext
+	rv.Set("target", cfg.ConnectorInfo.Name)
+	rv.Set("sub", sub)
+	redirectURI := "https://infinitysearch.xyz/api/installcallback?" + rv.Encode()
+
 	v := url.Values{}
+
 	v.Set("response_type", "code")
-	v.Set("client_id", cfg.ClientID)
-	v.Set("redirect_uri", "https://infinitysearch.xyz/api/installcallback")
-	v.Set("audience", cfg.Audience)
-	v.Set("scope", strings.Join(cfg.Scopes, " "))
+	v.Set("client_id", a.ClientID)
+	v.Set("redirect_uri", redirectURI)
+	v.Set("audience", a.Audience)
+	v.Set("scope", strings.Join(a.Scopes, " "))
 	v.Set("prompt", "consent")
 
-	u := cfg.AuthorizationURL + "?" + v.Encode()
+	u := a.AuthorizationURL + "?" + v.Encode()
 
 	return u, nil
 }

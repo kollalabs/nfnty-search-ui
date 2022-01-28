@@ -11,9 +11,9 @@ func TestInstallURL(t *testing.T) {
 	r.AddCookie(&http.Cookie{Name: "sub", Value: "sub_id"})
 
 	cfg := configs["job-nimbus"]
-	cfg.ClientID = "abc123"
+	cfg.AuthInfo.ClientID = "abc123"
 
-	dst, err := installURL(r, cfg)
+	dst, err := installURLWithAuthRedirect(r, cfg)
 	if err != nil {
 		t.Fatalf("unexpected error: %s\n", err)
 	}
