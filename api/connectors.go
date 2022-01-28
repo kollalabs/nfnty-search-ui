@@ -12,6 +12,7 @@ type ConnectorsResponse struct {
 }
 
 type Connector struct {
+	Name        string `json:"name"`
 	DisplayName string `json:"display_name"`
 	Logo        string `json:"logo"`
 	LogoSmall   string `json:"logo_small"`
@@ -26,12 +27,25 @@ func ConnectorsHandler(w http.ResponseWriter, r *http.Request) {
 
 	list := connectors()
 
-	if sub, err := isAuthed(); err != nil && sub != "" || true {
+	sub, err := isAuthed(ctx, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	if sub != "" {
 		// merge connected
 		err := mergeConnected(ctx, sub, list)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
+		}
+
+		for i, v := range list {
+			v.InstallURL, err = installURLNoAuthRedirect(configs[v.Name])
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			list[i] = v
 		}
 		// add install urls
 	}
@@ -52,8 +66,8 @@ func mergeConnected(ctx context.Context, sub string, list []Connector) error {
 	}
 
 	for i, v := range list {
-		for _, name := range installed {
-			if name == v.DisplayName {
+		for _, app := range installed {
+			if app.AppName == v.Name {
 				v.Connected = true
 				list[i] = v
 			}
@@ -68,6 +82,7 @@ func connectors() []Connector {
 	for _, v := range configs {
 		info := v.ConnectorInfo
 		list = append(list, Connector{
+			Name:        info.Name,
 			DisplayName: info.DisplayName,
 			Logo:        info.Logo,
 			LogoSmall:   info.LogoSmall,
@@ -75,9 +90,4 @@ func connectors() []Connector {
 	}
 
 	return list
-}
-
-// isAuthed hits the auth0
-func isAuthed() (string, error) {
-	return "", nil
 }

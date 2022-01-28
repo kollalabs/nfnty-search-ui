@@ -14,7 +14,8 @@ import (
 // https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2
 // Handles steps 3, 4, and 5 of the Authorization code flow
 const (
-	tokenURL = "https://k-job-nimbus.us.auth0.com/oauth/token"
+	tokenURL    = "https://k-job-nimbus.us.auth0.com/oauth/token"
+	userInfoURL = "https://infinitysearch.us.auth0.com/userinfo"
 
 	datastoreProjectID = "infinity-search-339422"
 )
@@ -108,6 +109,7 @@ type tokenInfo struct {
 	ExpiresIn    int64  `json:"expires_in"`
 	TokenType    string `json:"token_type"`
 
+	AppName            string `json:"app_name"`
 	InfinitySearchUser string `json:"infinity_search_user,omitempty"`
 }
 

@@ -13,6 +13,7 @@ type connectorConfig struct {
 }
 
 type connectorInfo struct {
+	Name        string
 	DisplayName string
 	Logo        string
 	LogoSmall   string
@@ -27,8 +28,9 @@ type authInfo struct {
 
 // TODO: move into a file that is loaded at startup
 var configs = map[string]connectorConfig{
-	"job-nimbus": {
+	"connectors/job-nimbus": {
 		ConnectorInfo: connectorInfo{
+			Name:        "connectors/job-nimbus",
 			DisplayName: "Job Nimbus",
 			Logo:        "",
 			LogoSmall:   "",
@@ -57,7 +59,7 @@ func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dest, err := installURL(r, cfg.AuthInfo)
+	dest, err := installURLWithAuthRedirect(r, cfg)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -67,7 +69,7 @@ func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func installURL(r *http.Request, cfg authInfo) (string, error) {
+func installURLWithAuthRedirect(r *http.Request, cfg connectorConfig) (string, error) {
 
 	sub, err := r.Cookie("sub")
 	if err != nil || sub.Value == "" {
@@ -75,17 +77,21 @@ func installURL(r *http.Request, cfg authInfo) (string, error) {
 		v.Set("redirect_uri", r.URL.String())
 		return "/login?" + v.Encode(), nil
 	}
+	return installURLNoAuthRedirect(cfg)
+}
 
+func installURLNoAuthRedirect(cfg connectorConfig) (string, error) {
 	// make sure that we have a cookie with the user's ID in it so we can link the tokens together
+	a := cfg.AuthInfo
 	v := url.Values{}
 	v.Set("response_type", "code")
-	v.Set("client_id", cfg.ClientID)
-	v.Set("redirect_uri", "https://infinitysearch.xyz/api/installcallback")
-	v.Set("audience", cfg.Audience)
-	v.Set("scope", strings.Join(cfg.Scopes, " "))
+	v.Set("client_id", a.ClientID)
+	v.Set("redirect_uri", "https://infinitysearch.xyz/api/installcallback?target="+cfg.ConnectorInfo.Name)
+	v.Set("audience", a.Audience)
+	v.Set("scope", strings.Join(a.Scopes, " "))
 	v.Set("prompt", "consent")
 
-	u := cfg.AuthorizationURL + "?" + v.Encode()
+	u := a.AuthorizationURL + "?" + v.Encode()
 
 	return u, nil
 }
