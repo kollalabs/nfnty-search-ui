@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import React from 'react';
-import imgUrl from '../../../static/images/infinity-search-logo-trimmed.png'; // this needs to be dynamic
+import imgUrl from '../../../static/images/logo-wide.png'; // this needs to be dynamic
 import { Link } from 'react-router-dom';
 
 const NavLogo = ({ narrow }: any) => {
@@ -11,7 +11,7 @@ const NavLogo = ({ narrow }: any) => {
   return (
     <Box sx={sx}>
       <Link to={'/apps'}>
-        <img src={imgUrl} style={{ maxWidth: '100%', height: '3rem' }} />
+        <img src={imgUrl} style={{ maxWidth: '100%', height: '2rem' }} />
       </Link>
     </Box>
   );
