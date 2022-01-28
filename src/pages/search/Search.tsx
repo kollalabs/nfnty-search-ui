@@ -7,7 +7,7 @@ import { NoData, PreSearch } from '../../components/search/NoData';
 import { useAppSearch } from '../../contexts/SearchContext';
 
 import useApi from '../../hooks/Api';
-import { AppItems } from './AppsItems';
+import { SearchItems } from './SearchItems';
 import { authConfig } from '../../config/authConfig';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useDebounce } from '../../hooks/Utility';
@@ -66,7 +66,7 @@ const Search = () => {
       {loading && <CircularProgress />}
       {error && checkError(error)}
       {!error && !loading && query.length === 0 && preSearch}
-      {keys.length > 0 && AppItems(keys, data)}
+      {keys.length > 0 && SearchItems(keys, data)}
       {!loading && query.length > 0 && keys.length === 0 && noData}
     </>
   );

@@ -1,5 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const useApi = (url: string, query: string = '', options: any = {}) => {
   const { getAccessTokenSilently } = useAuth0();
@@ -7,24 +7,11 @@ const useApi = (url: string, query: string = '', options: any = {}) => {
   const [error, setError] = useState<any>(null);
   const [data, setData] = useState([]);
   const [refreshIndex, setRefreshIndex] = useState(0);
+  const controller = new AbortController();
+  const { audience, scope, ...fetchOptions } = options;
 
-  useEffect(() => {
-    let controller = new AbortController();
-    const { audience, scope, ...fetchOptions } = options;
-
-    setData([]);
-    setLoading(false);
-    setError(null);
-
-    if (query.length === 0) {
-      console.log('QUERY:', query);
-      setData([]);
-      setLoading(false);
-      setError(null);
-      return;
-    }
-
-    (async () => {
+  const callApi = useCallback(
+    async (query) => {
       try {
         setLoading(true);
         const accessToken = await getAccessTokenSilently({ audience, scope });
@@ -49,7 +36,23 @@ const useApi = (url: string, query: string = '', options: any = {}) => {
         setError(error);
         setData(data);
       }
-    })();
+    },
+    [query]
+  );
+
+  useEffect(() => {
+    setData([]);
+    setLoading(false);
+    setError(null);
+
+    if (query.length === 0) {
+      setData([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    callApi(query);
 
     return () => controller?.abort();
   }, [query, refreshIndex]);

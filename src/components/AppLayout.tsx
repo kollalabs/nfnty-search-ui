@@ -23,7 +23,7 @@ const AppLayout = () => {
         <Header>
           <HeaderNavMenu />
         </Header>
-        <Grid item xs={12}>
+        <Grid item xs={12} sx={{ p: 2 }}>
           <Routes>
             <Route path={'*'} element={<NotFoundPage />} />
             <Route path={'/auth-callback'} element={<AuthCallback />} />

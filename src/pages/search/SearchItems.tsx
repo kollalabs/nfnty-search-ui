@@ -3,7 +3,7 @@ import React from 'react';
 import Typography from '@mui/material/Typography';
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 
-const AppItems = (keys: any, data: any) => {
+const SearchItems = (keys: any, data: any) => {
   return keys.map((item: any) => {
     if (data[item]['results']) {
       return data[item]['results'].map((details: any, index: number) => {
@@ -34,4 +34,4 @@ const AppItems = (keys: any, data: any) => {
   });
 };
 
-export { AppItems };
+export { SearchItems };
