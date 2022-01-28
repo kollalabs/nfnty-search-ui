@@ -4,12 +4,12 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 function AuthCallback() {
   const { isAuthenticated } = useAuth0();
-  let goTo = <Navigate to={'/login'} replace/>;
+  let goTo = <Navigate to={'/login'} replace />;
 
   console.log('isAuthenticated:', isAuthenticated);
 
   if (isAuthenticated) {
-    goTo = <Navigate to={'/apps'} replace/>;
+    goTo = <Navigate to={'/search'} replace />;
   }
 
   console.log('GOTO:', goTo);

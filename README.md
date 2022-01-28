@@ -1,8 +1,12 @@
 # Kolla App Marketplace demo
 
-## Get started
+### Install `yarn` globally:
 
-`yarn install`
+`npm i -g yarn`
+
+### Proceed with dependency installation
+
+`yarn`
 
 `yarn run dev`
 

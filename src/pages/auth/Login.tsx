@@ -12,7 +12,7 @@ function Login() {
   useEffect(() => {
     async function checkAuth() {
       if (isAuthenticated) {
-        navigate('/apps');
+        navigate('/search');
       } else {
         await loginWithRedirect();
       }
