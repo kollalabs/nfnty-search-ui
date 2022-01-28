@@ -4,12 +4,14 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
+
+	"golang.org/x/oauth2"
 )
 
 type connectorConfig struct {
 	ConnectorInfo connectorInfo
-	AuthInfo      authInfo
+	Audience      string
+	AuthInfo      oauth2.Config
 }
 
 type connectorInfo struct {
@@ -17,13 +19,6 @@ type connectorInfo struct {
 	DisplayName string
 	Logo        string
 	LogoSmall   string
-}
-
-type authInfo struct {
-	AuthorizationURL string
-	ClientID         string
-	Audience         string
-	Scopes           []string
 }
 
 // TODO: move into a file that is loaded at startup
@@ -35,10 +30,16 @@ var configs = map[string]connectorConfig{
 			Logo:        "https://www.jobnimbus.com/wp-content/uploads/2020/10/5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x.png",
 			LogoSmall:   "https://www.jobnimbus.com/wp-content/uploads/2020/10/cropped-5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x-32x32.png",
 		},
-		AuthInfo: authInfo{
-			AuthorizationURL: "https://k-job-nimbus.us.auth0.com/authorize",
-			ClientID:         os.Getenv("JN_CLIENT_ID"),
-			Audience:         "https://data.job-nimbus.program.kolla.dev",
+		Audience: "https://data.job-nimbus.program.kolla.dev",
+		AuthInfo: oauth2.Config{
+			ClientID:     os.Getenv("JN_CLIENT_ID"),
+			ClientSecret: os.Getenv("JN_CLIENT_SECRET"),
+			Endpoint: oauth2.Endpoint{
+				AuthURL:   "https://k-job-nimbus.us.auth0.com/authorize",
+				TokenURL:  "https://k-job-nimbus.us.auth0.com/oauth/token",
+				AuthStyle: oauth2.AuthStyleInParams,
+			},
+			RedirectURL: "https://infinitysearch.xyz/api/installcallback",
 			Scopes: []string{
 				"openid",
 				"offline_access",
@@ -84,23 +85,12 @@ func installURLNoAuthRedirect(cfg connectorConfig, sub string) (string, error) {
 	// make sure that we have a cookie with the user's ID in it so we can link the tokens together
 	a := cfg.AuthInfo
 
-	rv := url.Values{}
-
-	// TODO: pass this information through via a secure channel instead of plaintext
-	rv.Set("target", cfg.ConnectorInfo.Name)
-	rv.Set("sub", sub)
-	redirectURI := "https://infinitysearch.xyz/api/installcallback?" + rv.Encode()
-
-	v := url.Values{}
-
-	v.Set("response_type", "code")
-	v.Set("client_id", a.ClientID)
-	v.Set("redirect_uri", redirectURI)
-	v.Set("audience", a.Audience)
-	v.Set("scope", strings.Join(a.Scopes, " "))
-	v.Set("prompt", "consent")
-
-	u := a.AuthorizationURL + "?" + v.Encode()
-
-	return u, nil
+	codeOptions := []oauth2.AuthCodeOption{
+		oauth2.ApprovalForce, // force consent page to show everytime
+		oauth2.SetAuthURLParam("audience", cfg.Audience),
+		oauth2.SetAuthURLParam("target", cfg.ConnectorInfo.Name),
+		oauth2.SetAuthURLParam("sub", sub),
+	}
+	codeURL := a.AuthCodeURL("", codeOptions...)
+	return codeURL, nil
 }
