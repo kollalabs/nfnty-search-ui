@@ -33,7 +33,7 @@ var configs = map[string]connectorConfig{
 			Name:        "connectors/job-nimbus",
 			DisplayName: "Job Nimbus",
 			Logo:        "https://www.jobnimbus.com/wp-content/uploads/2020/10/5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x.png",
-			LogoSmall:   "https://3401zs241c1u3z7ulj3z6g7u-wpengine.netdna-ssl.com/wp-content/uploads/2020/10/cropped-5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x-32x32.png",
+			LogoSmall:   "https://www.jobnimbus.com/wp-content/uploads/2020/10/cropped-5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x-32x32.png",
 		},
 		AuthInfo: authInfo{
 			AuthorizationURL: "https://k-job-nimbus.us.auth0.com/authorize",
