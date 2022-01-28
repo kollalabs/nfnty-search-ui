@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
 	"os"
@@ -30,19 +31,28 @@ var configs = map[string]struct {
 // Redirects the user to either the login page or sends them to the providers
 // oauth authorization page
 func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
-	cfg, ok := configs[r.Form.Get("target")]
+
+	dest, err := installURL(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, dest, http.StatusFound)
+
+}
+
+func installURL(r *http.Request) (string, error) {
+	cfg, ok := configs[r.URL.Query().Get("target")]
 	if !ok {
-		http.Error(w, "unknown connector target", http.StatusInternalServerError)
+		return "", errors.New("unknown connector target")
 	}
 
 	sub, err := r.Cookie("sub")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-	if sub.Value == "" {
-		http.Redirect(w, r, "/login?redirect_uri="+r.URL.String(), http.StatusFound)
-		// redirect user to the login page
-		return
+	if err != nil || sub.Value == "" {
+		v := url.Values{}
+		v.Set("redirect_uri", r.URL.String())
+		return "/login?" + v.Encode(), nil
 	}
 
 	// make sure that we have a cookie with the user's ID in it so we can link the tokens together
@@ -58,6 +68,5 @@ func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
 
 	u := cfg.AuthorizationURL + "?" + v.Encode()
 
-	http.Redirect(w, r, u, http.StatusFound)
-
+	return u, nil
 }
