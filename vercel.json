@@ -1,14 +1,10 @@
 {
   "functions": {
-    "api/dictator.js": {
+    "api/*.js": {
       "memory": 128,
       "maxDuration": 5
     },
-    "api/search.js": {
-      "memory": 128,
-      "maxDuration": 5
-    },
-    "api/installcallback.go": {
+    "api/*.go": {
       "memory": 128,
       "maxDuration": 10
     }
