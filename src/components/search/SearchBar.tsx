@@ -4,7 +4,7 @@ import React from 'react';
 import { TextField } from '@mui/material';
 import { useAppSearch } from '../../contexts/SearchContext';
 
-const Search = () => {
+const SearchBar = () => {
   const { query, queryHandler } = useAppSearch();
 
   return (
@@ -22,4 +22,4 @@ const Search = () => {
   );
 };
 
-export default Search;
+export default SearchBar;

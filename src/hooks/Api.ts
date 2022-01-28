@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 const useApi = (url: string, query: string = '', options: any = {}) => {
   const { getAccessTokenSilently } = useAuth0();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
   const [data, setData] = useState([]);
   const [refreshIndex, setRefreshIndex] = useState(0);
@@ -12,7 +12,12 @@ const useApi = (url: string, query: string = '', options: any = {}) => {
     let controller = new AbortController();
     const { audience, scope, ...fetchOptions } = options;
 
+    setData([]);
+    setLoading(false);
+    setError(null);
+
     if (query.length === 0) {
+      console.log('QUERY:', query);
       setData([]);
       setLoading(false);
       setError(null);
@@ -21,11 +26,11 @@ const useApi = (url: string, query: string = '', options: any = {}) => {
 
     (async () => {
       try {
+        setLoading(true);
         const accessToken = await getAccessTokenSilently({ audience, scope });
         let res;
 
         if (query.startsWith('cl')) {
-          // if (import.meta.env.PROD) {
           res = await fetch(url, {
             signal: controller.signal,
             ...fetchOptions,
@@ -36,19 +41,6 @@ const useApi = (url: string, query: string = '', options: any = {}) => {
           });
           setData(await res?.json());
         }
-        // } else {
-        //   if (query.startsWith('cl')){
-        //     setData(
-        //       JSON.parse(
-        //         '{"jobnimbus":{"meta":{"logo":"https://api.jobnimbus.kolla.dev/assets/img/logo-main.png","display_name":"JobNimbus"},"results":[{"title":"Contact - Clint Berry","description":"Clint Berry is a contact in JobNimbus","link":"https://app.jobnimbus.com/contact/kwqtnapghyhm2cmsdvu5l51","kvdata":{"Phone":"8015551234"}},{"title":"Task - Lead Aging Warning","description":"Lead aging warning for Clinton Sanzota","link":"https://app.jobnimbus.com/task/kyqf1n6vc8su2wuukyfk0jy","kvdata":{"Priority":"HIGH"}}]}}'
-        //       )
-        //     );
-        //   } else {
-        //     setData(
-        //       JSON.parse('{}')
-        //     );
-        //   }
-        // }
 
         setLoading(false);
         setError(null);
@@ -60,7 +52,7 @@ const useApi = (url: string, query: string = '', options: any = {}) => {
     })();
 
     return () => controller?.abort();
-  }, [refreshIndex, query]);
+  }, [query, refreshIndex]);
 
   return {
     loading,
@@ -70,4 +62,4 @@ const useApi = (url: string, query: string = '', options: any = {}) => {
   };
 };
 
-export { useApi };
+export default useApi;

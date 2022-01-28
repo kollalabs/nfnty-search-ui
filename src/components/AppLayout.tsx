@@ -6,7 +6,6 @@ import Logout from '../pages/auth/Logout';
 import React from 'react';
 import { AppSearchProvider } from '../contexts/SearchContext';
 
-import Apps from '../pages/apps/Apps';
 import Footer from './layout/footer/Footer';
 import FooterNavMenu from './layout/footer/FooterNavMenu';
 import Header from './layout/header/Header';
@@ -14,6 +13,7 @@ import HeaderNavMenu from './layout/header/HeaderNavMenu';
 import Login from '../pages/auth/Login';
 import NotFoundPage from '../pages/common/NotFoundPage';
 import RequireAuth from './auth/RequireAuth';
+import Search from '../pages/search/Search';
 import { Route, Routes } from 'react-router-dom';
 
 const AppLayout = () => {
@@ -30,10 +30,10 @@ const AppLayout = () => {
             <Route path={'/login'} element={<Login />} />
             <Route path={'/logout'} element={<Logout />} />
             <Route
-              path={'/apps'}
+              path={'/search'}
               element={
                 <RequireAuth>
-                  <Apps />
+                  <Search />
                 </RequireAuth>
               }
             />
