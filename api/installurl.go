@@ -77,16 +77,23 @@ func installURLWithAuthRedirect(r *http.Request, cfg connectorConfig) (string, e
 		v.Set("redirect_uri", r.URL.String())
 		return "/login?" + v.Encode(), nil
 	}
-	return installURLNoAuthRedirect(cfg)
+	return installURLNoAuthRedirect(cfg, sub.Value)
 }
 
-func installURLNoAuthRedirect(cfg connectorConfig) (string, error) {
+func installURLNoAuthRedirect(cfg connectorConfig, sub string) (string, error) {
 	// make sure that we have a cookie with the user's ID in it so we can link the tokens together
 	a := cfg.AuthInfo
+
+	rv := url.Values{}
+	rv.Set("target", cfg.ConnectorInfo.Name)
+	rv.Set("sub", sub)
+	redirectURI := "https://infinitysearch.xyz/api/installcallback?" + rv.Encode()
+
 	v := url.Values{}
+
 	v.Set("response_type", "code")
 	v.Set("client_id", a.ClientID)
-	v.Set("redirect_uri", "https://infinitysearch.xyz/api/installcallback?target="+cfg.ConnectorInfo.Name)
+	v.Set("redirect_uri", redirectURI)
 	v.Set("audience", a.Audience)
 	v.Set("scope", strings.Join(a.Scopes, " "))
 	v.Set("prompt", "consent")

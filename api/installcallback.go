@@ -54,6 +54,18 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	target := r.URL.Query().Get("target")
+	if target == "" {
+		http.Error(w, "target is required", http.StatusBadRequest)
+		return
+	}
+
+	sub := r.URL.Query().Get("sub")
+	if sub == "" {
+		http.Error(w, "sub is required", http.StatusBadRequest)
+		return
+	}
+
 	args := url.Values{}
 	args.Set("grant_type", "authorization_code")
 	args.Set("client_id", clientID)
@@ -91,7 +103,9 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = saveUserAppToken(ctx, "", &tok)
+	tok.ConnectorName = target
+
+	err = saveUserAppToken(ctx, sub, &tok)
 	if err != nil {
 		http.Error(w, err.Error(), resp.StatusCode)
 		return
@@ -109,7 +123,7 @@ type tokenInfo struct {
 	ExpiresIn    int64  `json:"expires_in"`
 	TokenType    string `json:"token_type"`
 
-	AppName            string `json:"app_name"`
+	ConnectorName      string `json:"connector_name"`
 	InfinitySearchUser string `json:"infinity_search_user,omitempty"`
 }
 

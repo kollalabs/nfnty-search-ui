@@ -40,14 +40,13 @@ func ConnectorsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for i, v := range list {
-			v.InstallURL, err = installURLNoAuthRedirect(configs[v.Name])
+			v.InstallURL, err = installURLNoAuthRedirect(configs[v.Name], sub)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 			list[i] = v
 		}
-		// add install urls
 	}
 
 	resp := ConnectorsResponse{
@@ -67,7 +66,7 @@ func mergeConnected(ctx context.Context, sub string, list []Connector) error {
 
 	for i, v := range list {
 		for _, app := range installed {
-			if app.AppName == v.Name {
+			if app.ConnectorName == v.Name {
 				v.Connected = true
 				list[i] = v
 			}
