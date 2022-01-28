@@ -85,6 +85,8 @@ func installURLNoAuthRedirect(cfg connectorConfig, sub string) (string, error) {
 	a := cfg.AuthInfo
 
 	rv := url.Values{}
+
+	// TODO: pass this information through via a secure channel instead of plaintext
 	rv.Set("target", cfg.ConnectorInfo.Name)
 	rv.Set("sub", sub)
 	redirectURI := "https://infinitysearch.xyz/api/installcallback?" + rv.Encode()
