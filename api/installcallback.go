@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -8,6 +9,10 @@ import (
 	"net/url"
 	"os"
 	"strings"
+
+	"cloud.google.com/go/datastore"
+	"go.einride.tech/aip/resourceid"
+	"google.golang.org/api/option"
 )
 
 // CallbackHandler
@@ -15,6 +20,8 @@ import (
 // Handles steps 3, 4, and 5 of the Authorization code flow
 const (
 	tokenURL = "https://k-job-nimbus.us.auth0.com/oauth/token"
+
+	datastoreProjectID = "infinity-search-339422"
 )
 
 var (
@@ -31,6 +38,8 @@ func init() {
 }
 
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	errorResponse := r.URL.Query().Get("error")
 	if errorResponse != "" {
 		msg := errorResponse + " " + r.URL.Query().Get("error_description")
@@ -79,8 +88,14 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var tok tokenResponse
+	var tok tokenInfo
 	err = json.NewDecoder(resp.Body).Decode(&tok)
+	if err != nil {
+		http.Error(w, err.Error(), resp.StatusCode)
+		return
+	}
+
+	err = saveToken(ctx, &tok)
 	if err != nil {
 		http.Error(w, err.Error(), resp.StatusCode)
 		return
@@ -90,13 +105,15 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-type tokenResponse struct {
+type tokenInfo struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 	IDToken      string `json:"id_token"`
 	Scopes       string `json:"scope"`
 	ExpiresIn    int64  `json:"expires_in"`
 	TokenType    string `json:"token_type"`
+
+	InfinitySearchUser string `json:"infinity_search_user,omitempty"`
 }
 
 func reconstructRedirectURI(r *http.Request) string {
@@ -112,4 +129,33 @@ func reconstructRedirectURI(r *http.Request) string {
 	}
 
 	return u.String()
+}
+
+const datastoreTokenKind = "OAuthToken"
+
+func saveToken(ctx context.Context, t *tokenInfo) error {
+
+	credsJSON := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
+	options := []option.ClientOption{}
+	if credsJSON != "" {
+		options = append(options, option.WithCredentialsJSON([]byte(credsJSON)))
+	}
+	// Create a datastore client. In a typical application, you would create
+	// a single client which is reused for every datastore operation.
+	dsClient, err := datastore.NewClient(ctx, datastoreProjectID, options...)
+	if err != nil {
+		return err
+	}
+	defer dsClient.Close()
+
+	key := resourceid.NewSystemGeneratedBase32()
+
+	// kind, name, parent
+	k := datastore.NameKey(datastoreTokenKind, key, nil)
+
+	if _, err := dsClient.Put(ctx, k, t); err != nil {
+		return err
+	}
+
+	return nil
 }

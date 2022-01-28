@@ -16,6 +16,10 @@ const JWTOptions = {
 module.exports = async (req, res) => {
   let subscriber;
 
+  if (req.method == "OPTIONS") {
+    return res.status(200).send("");
+  }
+
   try {
     subscriber = await validateRequest(req);
   } catch (err) {
