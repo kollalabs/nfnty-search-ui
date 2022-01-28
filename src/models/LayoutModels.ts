@@ -4,7 +4,7 @@ type MenuLink = {
 };
 
 const menuUserLinks = [
-  { displayName: 'Apps', url: '/apps' },
+  { displayName: 'Connections', url: '/connections' },
   { displayName: 'Logout', url: '/logout' },
 ] as MenuLink[];
 
