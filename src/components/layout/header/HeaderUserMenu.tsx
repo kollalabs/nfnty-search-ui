@@ -36,7 +36,7 @@ const HeaderUserMenu = () => {
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip title="Open settings">
         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-          <Avatar alt="User Profile" src="/favicon.svg" />
+          <Avatar alt="User Profile" />
         </IconButton>
       </Tooltip>
       <Menu
