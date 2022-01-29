@@ -1,13 +1,19 @@
+import { authConfig } from '../config/authConfig';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useCallback, useEffect, useState } from 'react';
 
-const useApi = (url: string, query?: string, options: any = {}) => {
+const useApi = (url: string, query?: string, options?: any) => {
   const { getAccessTokenSilently } = useAuth0();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
   const [data, setData] = useState([]);
   const [refreshIndex, setRefreshIndex] = useState(0);
   const controller = new AbortController();
+
+  if (!options) {
+    options = { ...authConfig };
+  }
+
   const { audience, scope, ...fetchOptions } = options;
 
   const callApi = useCallback(
@@ -18,7 +24,7 @@ const useApi = (url: string, query?: string, options: any = {}) => {
         let res;
 
         if (query.startsWith('cl')) {
-          res = await fetch(`${url}${query}`, {
+          res = await fetch(`${authConfig.audience}${url}${query}`, {
             signal: controller.signal,
             ...fetchOptions,
             headers: {
