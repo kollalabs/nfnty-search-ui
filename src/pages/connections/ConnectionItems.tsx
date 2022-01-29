@@ -1,7 +1,5 @@
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import React from 'react';
 import Typography from '@mui/material/Typography';
@@ -31,14 +29,11 @@ const ConnectionItems = (keys: string[], data: any) => {
             }}
           >
             <CardContent sx={{ textAlign: 'center' }}>
-              <Avatar src={connector.logo} sx={{ width: 64, height: 64, mx: 'auto' }} />
+              <Avatar src={connector.logo} sx={{ width: 64, height: 64, mx: 'auto', mb: 2 }} />
               <Typography variant={'h5'} component={'h2'}>
                 {connector.display_name}
               </Typography>
             </CardContent>
-            <CardActions>
-              <Button size="small">Learn More</Button>
-            </CardActions>
           </Card>
         );
       });
