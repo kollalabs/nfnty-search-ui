@@ -19,19 +19,6 @@ const (
 	datastoreProjectID = "infinity-search-339422"
 )
 
-var (
-	isConfigured = false
-	clientID     = os.Getenv("JN_CLIENT_ID")
-	clientSecret = os.Getenv("JN_CLIENT_SECRET")
-)
-
-func init() {
-	if clientID == "" || clientSecret == "" {
-		return
-	}
-	isConfigured = true
-}
-
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -39,11 +26,6 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	if errorResponse != "" {
 		msg := errorResponse + " " + r.URL.Query().Get("error_description")
 		http.Error(w, msg, http.StatusOK)
-		return
-	}
-
-	if !isConfigured {
-		http.Error(w, "callback handler is not configured", http.StatusInternalServerError)
 		return
 	}
 
