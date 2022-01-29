@@ -2,11 +2,12 @@ import CheckError from '../../components/common/ErrorCheck';
 import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
 
+import NoResults from '../../components/search/NoResults';
+import PreSearch from '../../components/search/PreSearch';
 import SearchBar from '../../components/search/SearchBar';
 import useApi from '../../hooks/Api';
 import useAuthCheck from '../../hooks/AuthCheck';
 import useDocumentTitle from '../../hooks/DocumentTitle';
-import { NoData, PreSearch } from '../../components/search/NoData';
 import { SearchItems } from './SearchItems';
 import { useAppSearch } from '../../contexts/SearchContext';
 import { useDebounce } from '../../hooks/Utilities';
@@ -18,7 +19,7 @@ const Search = () => {
   useAuthCheck();
   const { query } = useAppSearch();
   const debouncedValue = useDebounce<string>(query, 200);
-  const { loading, error, data, refresh } = useApi(`/api/search?text=`, debouncedValue);
+  const { loading, error, data, refresh } = useApi(`/api/search?text=`, debouncedValue, 'cl');
 
   if (data) {
     // companies...
@@ -30,9 +31,9 @@ const Search = () => {
       <SearchBar />
       {loading && <CircularProgress />}
       {error && <CheckError error={error} apiRefresh={refresh} />}
-      {!loading && !error && query.length === 0 && <PreSearch />}
+      {!loading && !error && query.length === 0 && <PreSearch message={'Hey, start searching!'} />}
       {companies.length > 0 && SearchItems(companies, data)}
-      {!loading && query.length > 0 && companies.length === 0 && <NoData />}
+      {!loading && query.length > 0 && companies.length === 0 && <NoResults />}
     </>
   );
 };

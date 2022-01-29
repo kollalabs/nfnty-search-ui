@@ -21,9 +21,9 @@ const SearchItems = (keys: string[], data: any) => {
       return;
     }
 
-    const defails: Connection = data[item];
-    const meta: ConnectionMeta = defails.meta as ConnectionMeta;
-    const results: ConnectionDetails[] = defails.results as ConnectionDetails[];
+    const details: Connection = data[item];
+    const meta: ConnectionMeta = details.meta as ConnectionMeta;
+    const results: ConnectionDetails[] = details.results as ConnectionDetails[];
 
     if (meta) {
       header.push(
@@ -46,7 +46,7 @@ const SearchItems = (keys: string[], data: any) => {
     }
 
     if (results) {
-      body = defails.results.map((details: ConnectionDetails, index: number) => {
+      body = details.results.map((details: ConnectionDetails, index: number) => {
         return (
           <Accordion key={index} TransitionProps={{ unmountOnExit: true }}>
             <AccordionSummary

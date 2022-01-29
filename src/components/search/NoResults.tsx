@@ -5,7 +5,7 @@ import React from 'react';
 import Typography from '@mui/material/Typography';
 import { Link as RouterLink } from 'react-router-dom';
 
-const NoData = () => (
+const NoResults = () => (
   <>
     <Alert key={0} severity={'info'} sx={{ m: 2 }}>
       No data found
@@ -19,6 +19,4 @@ const NoData = () => (
   </>
 );
 
-const PreSearch = () => <>Hey, start searching!</>;
-
-export { NoData, PreSearch };
+export default NoResults;

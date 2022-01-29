@@ -2,8 +2,8 @@
 // import Card from '@mui/material/Card';
 import CheckError from '../../components/common/ErrorCheck';
 import CircularProgress from '@mui/material/CircularProgress';
+import NoResults from '../../components/search/NoResults';
 import React from 'react';
-import { NoData, PreSearch } from '../../components/search/NoData';
 // import Typography from '@mui/material/Typography';
 
 import useApi from '../../hooks/Api';
@@ -16,10 +16,14 @@ const Connections = () => {
 
   useDocumentTitle('Connections');
   useAuthCheck('/connections');
-  const { loading, error, data, refresh } = useApi(`/api/connections`);
+  const { loading, error, data, refresh } = useApi(`/api/connectors`);
+
+  if (error) {
+    console.log('Error:', error);
+  }
 
   if (data) {
-    // companies...
+    // connectors...
     keys = Object.keys(data);
   }
 
@@ -27,9 +31,8 @@ const Connections = () => {
     <>
       {loading && <CircularProgress />}
       {error && <CheckError error={error} apiRefresh={refresh} />}
-      {!error && !loading && <PreSearch />}
       {keys.length > 0 && SearchItems(keys, data)}
-      {!loading && keys.length === 0 && <NoData />}
+      {!loading && keys.length === 0 && <NoResults />}
     </>
   );
 };
