@@ -18,4 +18,13 @@ type ConnectionDetails = {
   [key: string]: any;
 };
 
-export type { Connection, ConnectionDetails, ConnectionMeta };
+type Connector = {
+  name: string;
+  display_name: string;
+  logo: string;
+  logo_small: string;
+  connected: boolean;
+  install_url: string;
+};
+
+export type { Connector, Connection, ConnectionDetails, ConnectionMeta };

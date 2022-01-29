@@ -11,9 +11,6 @@ const useApi = (url: string, query?: string, testStartsWith?: string, options?: 
   const controller = new AbortController();
   let proceed: boolean = true;
 
-  console.log('query', query);
-  console.log('testStartsWith', testStartsWith);
-
   //BEGIN: TODO: Filtering...remove this
   if (!query && testStartsWith) {
     proceed = false;
