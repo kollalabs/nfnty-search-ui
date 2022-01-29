@@ -1,4 +1,4 @@
-# Kolla App Marketplace demo
+# InfinitySearch demo
 
 ### Install `yarn` globally:
 
