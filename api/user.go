@@ -15,7 +15,12 @@ import (
 	"google.golang.org/api/option"
 )
 
-const datastoreTokenKind = "OAuthToken"
+const (
+	userInfoURL = "https://infinitysearch.us.auth0.com/userinfo"
+
+	datastoreTokenKind = "OAuthToken"
+	datastoreProjectID = "infinity-search-339422"
+)
 
 var defaultDataStore struct {
 	client *datastore.Client
@@ -107,7 +112,7 @@ func isAuthed(ctx context.Context, r *http.Request) (string, error) {
 }
 
 func tokenFromRequest(r *http.Request) string {
-	header := r.Header.Get("Authentication")
+	header := r.Header.Get("Authorization")
 	prefix := "Bearer "
 	if !strings.HasPrefix(header, prefix) {
 		return ""

@@ -37,6 +37,10 @@ module.exports = async (req, res) => {
 // handler to validate the JWT authentication token
 async function validateRequest(req) {
   const authHeader = req.headers['authorization'];
+  if (authHeader.length < 20) {
+    throw 'authentication required';
+  }
+
   const parts = authHeader.split(' ');
 
   if (parts.length !== 2 || parts[0] !== 'Bearer') {

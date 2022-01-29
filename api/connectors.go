@@ -54,6 +54,7 @@ func ConnectorsHandler(w http.ResponseWriter, r *http.Request) {
 		Connectors: list,
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(resp)
 
 }
