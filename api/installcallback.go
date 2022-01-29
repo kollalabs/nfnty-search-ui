@@ -13,11 +13,6 @@ import (
 // CallbackHandler
 // https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2
 // Handles steps 3, 4, and 5 of the Authorization code flow
-const (
-	userInfoURL = "https://infinitysearch.us.auth0.com/userinfo"
-
-	datastoreProjectID = "infinity-search-339422"
-)
 
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
