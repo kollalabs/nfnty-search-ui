@@ -15,8 +15,8 @@ import { ConnectionItems } from './ConnectionItems';
 const Connections = () => {
   let connectors: string[] = [];
 
-  useDocumentTitle('Connections');
-  useAuthCheck('/connections');
+  useDocumentTitle('Connectors');
+  useAuthCheck('/connectors');
   const { loading, error, data, refresh } = useApi(`/api/connectors`);
 
   if (error) {

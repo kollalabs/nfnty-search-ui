@@ -11,9 +11,9 @@ const NoResults = () => (
       No data found
     </Alert>
     <Card raised sx={{ p: 1, m: 1 }}>
-      <Typography variant={'h6'}>Add more connections</Typography>
-      <Button key={'0'} component={RouterLink} to={'/connections'}>
-        View Connections
+      <Typography variant={'h6'}>Add more connectors</Typography>
+      <Button key={'0'} component={RouterLink} to={'/connectors'}>
+        View Connectors
       </Button>
     </Card>
   </>

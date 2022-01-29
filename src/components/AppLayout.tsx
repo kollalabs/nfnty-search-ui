@@ -38,7 +38,7 @@ const AppLayout = () => {
               }
             />
             <Route
-              path={'/connections'}
+              path={'/connectors'}
               element={
                 <RequireAuth>
                   <Connections />
