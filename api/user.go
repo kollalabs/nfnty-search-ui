@@ -15,7 +15,12 @@ import (
 	"google.golang.org/api/option"
 )
 
-const datastoreTokenKind = "OAuthToken"
+const (
+	userInfoURL = "https://infinitysearch.us.auth0.com/userinfo"
+
+	datastoreTokenKind = "OAuthToken"
+	datastoreProjectID = "infinity-search-339422"
+)
 
 var defaultDataStore struct {
 	client *datastore.Client

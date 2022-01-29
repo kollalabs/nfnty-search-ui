@@ -2,35 +2,17 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"strings"
+
+	"golang.org/x/oauth2"
 )
 
 // CallbackHandler
 // https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2
 // Handles steps 3, 4, and 5 of the Authorization code flow
-const (
-	userInfoURL = "https://infinitysearch.us.auth0.com/userinfo"
-
-	datastoreProjectID = "infinity-search-339422"
-)
-
-var (
-	isConfigured = false
-	clientID     = os.Getenv("JN_CLIENT_ID")
-	clientSecret = os.Getenv("JN_CLIENT_SECRET")
-)
-
-func init() {
-	if clientID == "" || clientSecret == "" {
-		return
-	}
-	isConfigured = true
-}
 
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -39,11 +21,6 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	if errorResponse != "" {
 		msg := errorResponse + " " + r.URL.Query().Get("error_description")
 		http.Error(w, msg, http.StatusOK)
-		return
-	}
-
-	if !isConfigured {
-		http.Error(w, "callback handler is not configured", http.StatusInternalServerError)
 		return
 	}
 
@@ -71,48 +48,27 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	args := url.Values{}
-	args.Set("grant_type", "authorization_code")
-	args.Set("client_id", clientID)
-	args.Set("client_secret", clientSecret)
-	args.Set("code", authorizationCode)
-	args.Set("redirect_uri", reconstructRedirectURI(r))
-
-	u := cfg.AuthInfo.Endpoint.TokenURL
-
-	req, err := http.NewRequest(http.MethodPost, u, strings.NewReader(args.Encode()))
+	c := cfg.AuthInfo
+	c.RedirectURL = reconstructRedirectURI(r)
+	resp, err := c.Exchange(ctx, authorizationCode)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	req.Header.Set("content-type", "application/x-www-form-urlencoded")
+	idToken := resp.Extra("id_token").(string)
+	scopes := strings.Split(resp.Extra("scope").(string), " ")
 
-	out, _ := httputil.DumpRequest(req, true)
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	tok := tokenInfo{
+		Token:         resp,
+		IDToken:       idToken,
+		Scopes:        scopes,
+		ConnectorName: target,
 	}
-	if resp.StatusCode >= 300 {
-		b, _ := ioutil.ReadAll(resp.Body)
-		http.Error(w, string(b)+"\n\n"+string(out), resp.StatusCode)
-		return
-	}
-
-	var tok tokenInfo
-	err = json.NewDecoder(resp.Body).Decode(&tok)
-	if err != nil {
-		http.Error(w, err.Error(), resp.StatusCode)
-		return
-	}
-
-	tok.ConnectorName = target
 
 	err = saveUserAppToken(ctx, sub, &tok)
 	if err != nil {
-		http.Error(w, err.Error(), resp.StatusCode)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -121,15 +77,12 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type tokenInfo struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-	IDToken      string `json:"id_token"`
-	Scopes       string `json:"scope"`
-	ExpiresIn    int64  `json:"expires_in"`
-	TokenType    string `json:"token_type"`
+	*oauth2.Token
+	IDToken string
+	Scopes  []string
 
-	ConnectorName      string `json:"connector_name"`
-	InfinitySearchUser string `json:"infinity_search_user,omitempty"`
+	ConnectorName      string
+	InfinitySearchUser string
 }
 
 func reconstructRedirectURI(r *http.Request) string {
