@@ -1,3 +1,4 @@
+import { AnyObject } from '../models/CommonModels';
 import { authConfig } from '../config/authConfig';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -10,7 +11,7 @@ const useApi = (url: string, query?: string, testStartsWith?: string, options?: 
   const [refreshIndex, setRefreshIndex] = useState(0);
   const controller = new AbortController();
 
-  const cache: { [key: string]: any } = useRef({});
+  const cache: AnyObject = useRef({});
   let proceed: boolean = true;
   const cacheKey = `${url}${query}`;
 
