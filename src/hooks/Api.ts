@@ -1,6 +1,7 @@
+import { AnyObject } from '../models/CommonModels';
 import { authConfig } from '../config/authConfig';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const useApi = (url: string, query?: string, testStartsWith?: string, options?: any) => {
   const { getAccessTokenSilently } = useAuth0();
@@ -9,7 +10,10 @@ const useApi = (url: string, query?: string, testStartsWith?: string, options?: 
   const [data, setData] = useState([]);
   const [refreshIndex, setRefreshIndex] = useState(0);
   const controller = new AbortController();
+
+  const cache: AnyObject = useRef({});
   let proceed: boolean = true;
+  const cacheKey = `${url}${query}`;
 
   //BEGIN: TODO: Filtering...remove this
   if (!query && testStartsWith) {
@@ -36,22 +40,30 @@ const useApi = (url: string, query?: string, testStartsWith?: string, options?: 
     async (query) => {
       try {
         setLoading(true);
-        const accessToken = await getAccessTokenSilently({ audience, scope });
-        let res;
 
-        if (!query) query = '';
-        res = await fetch(`${authConfig.audience}${url}${query}`, {
-          signal: controller.signal,
-          ...fetchOptions,
-          headers: {
-            ...fetchOptions?.headers,
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        if (cache.current[cacheKey]) {
+          setData(cache.current[cacheKey]);
+          setLoading(false);
+          setError(null);
+        } else {
+          const accessToken = await getAccessTokenSilently({ audience, scope });
+          let res;
 
-        setData(await res?.json());
-        setLoading(false);
-        setError(null);
+          if (!query) query = '';
+          res = await fetch(`${authConfig.audience}${url}${query}`, {
+            signal: controller.signal,
+            ...fetchOptions,
+            headers: {
+              ...fetchOptions?.headers,
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+
+          cache.current[cacheKey] = await res?.json();
+          setData(cache.current[cacheKey]);
+          setLoading(false);
+          setError(null);
+        }
       } catch (error: any) {
         setLoading(false);
         setError(error);
@@ -62,6 +74,8 @@ const useApi = (url: string, query?: string, testStartsWith?: string, options?: 
   );
 
   useEffect(() => {
+    if (!url) return;
+
     setData([]);
     setLoading(false);
     setError(null);

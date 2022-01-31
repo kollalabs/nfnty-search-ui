@@ -19,10 +19,6 @@ const Connections = () => {
   useAuthCheck('/connectors');
   const { loading, error, data, refresh } = useApi(`/api/connectors`);
 
-  if (error) {
-    console.log('Error:', error);
-  }
-
   if (data) {
     // connectors...
     connectors = Object.keys(data);

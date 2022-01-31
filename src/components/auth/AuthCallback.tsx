@@ -6,13 +6,10 @@ function AuthCallback() {
   const { isAuthenticated } = useAuth0();
   let goTo = <Navigate to={'/login'} replace />;
 
-  console.log('isAuthenticated:', isAuthenticated);
-
   if (isAuthenticated) {
     goTo = <Navigate to={'/search'} replace />;
   }
 
-  console.log('GOTO:', goTo);
   return goTo;
 }
 
