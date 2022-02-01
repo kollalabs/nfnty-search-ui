@@ -2,11 +2,12 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 )
 
-var handlers = map[string]func(ctx context.Context, filter string) ([]SearchResult, SearchMeta, error){
-	"job-nimbus": jobNimbusSearch,
+var handlers = map[string]func(context.Context, tokenInfo, string) ([]SearchResult, SearchMeta, error){
+	"connectors/job-nimbus": jobNimbusSearch,
 }
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
@@ -19,12 +20,12 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, app := range apps {
-		f, ok := handlers[app.ConnectorName]
+	for _, appToken := range apps {
+		f, ok := handlers[appToken.ConnectorName]
 		if !ok {
 			continue
 		}
-		_, _, err := f(ctx, r.URL.Query().Get("filter"))
+		_, _, err := f(ctx, appToken, r.URL.Query().Get("filter"))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -50,6 +51,6 @@ type SearchResult struct {
 	Kvdata      map[string]string `json:"kvdata,omitempty"`
 }
 
-func jobNimbusSearch(ctx context.Context, filter string) ([]SearchResult, SearchMeta, error) {
-	return nil, SearchMeta{}, nil
+func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) ([]SearchResult, SearchMeta, error) {
+	return nil, SearchMeta{}, fmt.Errorf("not implemented")
 }
