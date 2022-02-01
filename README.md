@@ -1,13 +1,13 @@
 # InfinitySearch demo
 
-### Install `yarn` globally:
+### Install `pnpm` globally:
 
-`npm i -g yarn`
+`npm i -g pnpm`
 
 ### Proceed with dependency installation
 
-`yarn`
+`pnpm i`
 
-`yarn run dev`
+`pnpm dev`
 
 Open http://localhost:3000

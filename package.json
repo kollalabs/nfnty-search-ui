@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "build-ts": "tsc --build && vite build",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "jest --watch"
