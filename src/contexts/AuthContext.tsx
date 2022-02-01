@@ -1,21 +1,27 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { AuthProps, Token } from '../models/AuthModels';
+import { authConfig } from '../config/authConfig';
+import { useAuth0 } from '@auth0/auth0-react';
 
-const UserContext = createContext<Token>(null as Token);
-const UserDispatchContext = createContext<
-  React.Dispatch<React.SetStateAction<string | null>>
->(() => {});
+const AuthContext = createContext<Token>(null as Token);
 
-function UserProvider(props: AuthProps) {
-  const [token, setToken] = useState(props.token || null);
+function AuthProvider(props: AuthProps) {
+  const [token, setToken] = useState(null as Token);
+  const { getAccessTokenSilently } = useAuth0();
 
-  return (
-    <UserContext.Provider value={token}>
-      <UserDispatchContext.Provider value={setToken}>
-        {props.children}
-      </UserDispatchContext.Provider>
-    </UserContext.Provider>
-  );
+  useEffect(() => {
+    (async () => {
+      const accessToken = await getAccessTokenSilently({
+        audience: authConfig.audience,
+        scope: authConfig.scope,
+      });
+      setToken(accessToken);
+    })();
+  }, []);
+
+  return <AuthContext.Provider value={token} {...props} />;
 }
 
-export { UserContext, UserDispatchContext, UserProvider };
+const useAuth = () => React.useContext(AuthContext);
+
+export { AuthProvider, useAuth };
