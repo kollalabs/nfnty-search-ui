@@ -2,9 +2,12 @@ package api
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 )
+
+var handlers = map[string]func(ctx context.Context, filter string) ([]SearchResult, SearchMeta, error){
+	"job-nimbus": jobNimbusSearch,
+}
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
@@ -15,7 +18,19 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(apps)
+
+	for _, app := range apps {
+		f, ok := handlers[app.ConnectorName]
+		if !ok {
+			continue
+		}
+		_, _, err := f(ctx, r.URL.Query().Get("filter"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
 }
 
 type SearchResponse map[string]struct {
@@ -33,4 +48,8 @@ type SearchResult struct {
 	Description string            `json:"description"`
 	Link        string            `json:"link"`
 	Kvdata      map[string]string `json:"kvdata,omitempty"`
+}
+
+func jobNimbusSearch(ctx context.Context, filter string) ([]SearchResult, SearchMeta, error) {
+	return nil, SearchMeta{}, nil
 }
