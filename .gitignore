@@ -12,11 +12,13 @@ dist-ssr
 .lh
 .idea
 
-# yarn
+# Pkg managers
 .yarn
 
-.vercel
-
-# local dev files 
+# local dev files
 /api/goserver/credentials
 /api/goserver/goserver/goserver
+
+# Other
+*debug.log
+.vercel
