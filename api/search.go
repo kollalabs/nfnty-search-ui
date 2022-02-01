@@ -1,9 +1,21 @@
 package api
 
-import "net/http"
+import (
+	"context"
+	"fmt"
+	"net/http"
+)
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
 
+	sub := "" // TODO: get sub
+	apps, err := userApps(ctx, sub)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(apps)
 }
 
 type SearchResponse map[string]struct {
