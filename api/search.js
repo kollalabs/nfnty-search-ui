@@ -63,26 +63,26 @@ async function validateRequest(req) {
 }
 
 const sampleResult = {
-  jobnimbus: {
-    meta: {
-      logo: 'https://3401zs241c1u3z7ulj3z6g7u-wpengine.netdna-ssl.com/wp-content/uploads/2020/10/cropped-5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x-32x32.png',
-      display_name: 'JobNimbus',
+  "jobnimbus": {
+    "meta": {
+      "logo": "https://3401zs241c1u3z7ulj3z6g7u-wpengine.netdna-ssl.com/wp-content/uploads/2020/10/cropped-5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x-32x32.png",
+      "display_name": "JobNimbus",
     },
-    results: [
+    "results": [
       {
-        title: 'Contact - Clint Berry',
-        description: 'Clint Berry is a contact in JobNimbus',
-        link: 'https://app.jobnimbus.com/contact/kwqtnapghyhm2cmsdvu5l51',
-        kvdata: {
-          Phone: '8015551234',
+        "title": "Contact - Clint Berry",
+        "description": "Clint Berry is a contact in JobNimbus",
+        "link": "https://app.jobnimbus.com/contact/kwqtnapghyhm2cmsdvu5l51",
+        "kvdata": {
+          "Phone": "8015551234",
         },
       },
       {
-        title: 'Task - Lead Aging Warning',
-        description: 'Lead aging warning for Clinton Sanzota',
-        link: 'https://app.jobnimbus.com/task/kyqf1n6vc8su2wuukyfk0jy',
-        kvdata: {
-          Priority: 'HIGH',
+        "title": "Task - Lead Aging Warning",
+        "description": "Lead aging warning for Clinton Sanzota",
+        "link": "https://app.jobnimbus.com/task/kyqf1n6vc8su2wuukyfk0jy",
+        "kvdata": {
+          "Priority": "HIGH",
         },
       },
     ],
