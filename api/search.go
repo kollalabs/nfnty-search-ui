@@ -168,6 +168,11 @@ func convertJobNimbusContact(c *jobnimbusclient.Contact) ConnectorResult {
 	}
 	data := make(map[string]string)
 	addIfSet(data, "Company", c.Company)
+	addIfSet(data, "Home Phone", c.PhoneHome)
+	addIfSet(data, "Mobile Phone", c.PhoneMobile)
+	addIfSet(data, "Work Phone", c.PhoneWork)
+	addIfSet(data, "Other Phone", c.PhoneOther)
+	addIfSet(data, "Email", c.Email)
 	// TODO: get contact methods in here
 
 	return ConnectorResult{
