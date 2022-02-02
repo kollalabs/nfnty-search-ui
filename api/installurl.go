@@ -85,11 +85,19 @@ func installURLNoAuthRedirect(cfg connectorConfig, sub string) (string, error) {
 	// make sure that we have a cookie with the user's ID in it so we can link the tokens together
 	a := cfg.AuthInfo
 
+	u, err := url.Parse(a.RedirectURL)
+	if err != nil {
+		return "", err
+	}
+	v := u.Query()
+	v.Set("sub", sub)
+	v.Set("target", cfg.ConnectorInfo.Name)
+	u.RawQuery = v.Encode()
+	a.RedirectURL = u.String()
+
 	codeOptions := []oauth2.AuthCodeOption{
 		oauth2.ApprovalForce, // force consent page to show everytime
 		oauth2.SetAuthURLParam("audience", cfg.Audience),
-		oauth2.SetAuthURLParam("target", cfg.ConnectorInfo.Name),
-		oauth2.SetAuthURLParam("sub", sub),
 	}
 	codeURL := a.AuthCodeURL("", codeOptions...)
 	return codeURL, nil
