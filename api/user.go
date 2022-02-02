@@ -59,14 +59,14 @@ func datastoreClient(ctx context.Context) (*datastore.Client, error) {
 	return dsClient, nil
 }
 
-func userApps(ctx context.Context, sub string) ([]tokenInfo, error) {
+func userApps(ctx context.Context, sub string) (map[string]tokenInfo, error) {
 
 	dsClient, err := datastoreClient(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get client: %w", err)
 	}
 
-	query := datastore.NewQuery(datastoreTokenKind).Filter("InfinitySearchUser =", sub)
+	query := datastore.NewQuery(datastoreTokenKind).Filter("InfinitySearchUser =", sub).Order("-Expiry")
 
 	var results []tokenInfo
 	_, err = dsClient.GetAll(ctx, query, &results)
@@ -74,12 +74,20 @@ func userApps(ctx context.Context, sub string) ([]tokenInfo, error) {
 		return nil, err
 	}
 
-	return results, nil
+	// grab the first token we see for each connector
+	agg := make(map[string]tokenInfo)
+	for _, v := range results {
+		_, ok := agg[v.ConnectorName]
+		if ok {
+			continue
+		}
+		agg[v.ConnectorName] = v
+	}
+
+	return agg, nil
 }
 
-func saveUserAppToken(ctx context.Context, sub string, t *tokenInfo) error {
-
-	t.InfinitySearchUser = sub
+func saveUserAppToken(ctx context.Context, t *tokenInfo) error {
 
 	key := resourceid.NewSystemGeneratedBase32()
 

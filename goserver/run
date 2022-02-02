@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -eux
+
+pushd "$(dirname ${0})"
+
+go build --tags local
+
+source credentials
+
+# go server requires the gcloud CLI to be logged in with `gcloud auth application-default login`
+./goserver
