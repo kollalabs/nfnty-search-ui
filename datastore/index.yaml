@@ -1,0 +1,6 @@
+indexes:
+- kind: OAuthToken
+  properties:
+    - name: InfinitySearchUser
+    - name: Expiry
+      direction: desc
