@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/gogo/protobuf/jsonpb"
 	"github.com/kollalabs/nfnty-search-ui/api/jobnimbusclient"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var handlers = map[string]func(context.Context, tokenInfo, string) (*SearchResults, error){
@@ -88,8 +88,8 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 	}
 	defer resp.Body.Close()
 
+	b, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode >= 300 {
-		b, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("invlid status code: %d [%s]", resp.StatusCode, string(b))
 	}
 
@@ -100,7 +100,9 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 	}
 
 	var listResponse jobnimbusclient.ListContactsResponse
-	err = jsonpb.Unmarshal(resp.Body, &listResponse)
+	err = protojson.UnmarshalOptions{
+		DiscardUnknown: false,
+	}.Unmarshal(b, &listResponse)
 	if err != nil {
 		return nil, err
 	}
