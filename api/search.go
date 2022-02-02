@@ -6,6 +6,9 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/kollalabs/nfnty-search-ui/api/jobnimbusclient"
 )
 
 var handlers = map[string]func(context.Context, tokenInfo, string) (*SearchResults, error){
@@ -94,6 +97,12 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 	result := SearchResults{
 		Meta:    jobNimbusMetadata,
 		Results: nil,
+	}
+
+	var listResponse jobnimbusclient.ListContactsResponse
+	err = jsonpb.Unmarshal(resp.Body, &listResponse)
+	if err != nil {
+		return nil, err
 	}
 
 	return &result, fmt.Errorf("not implemented")
