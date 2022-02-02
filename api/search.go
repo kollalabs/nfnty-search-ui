@@ -80,20 +80,35 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 		"filter": []string{"filter"},
 	}
 
-	oauthCfg := configs[t.ConnectorName].AuthInfo
-	httpClient := oauthCfg.Client(ctx, t.Token)
+	// TODO: this whole refresh token blob needs to be extracted into a more
+	// general place
+	cfg, ok := configs[t.ConnectorName]
+	if !ok {
+		return nil, fmt.Errorf("unable to find config for [%s]", t.ConnectorName)
+	}
+	tokenSource := cfg.AuthInfo.TokenSource(ctx, t.Token)
 
-	defer func() {
-		// TODO: check if the refresh token has changed on us
-	}()
+	token, err := tokenSource.Token()
+	if err != nil {
+		return nil, err
+	}
+	if token.RefreshToken != t.RefreshToken {
+		t.AccessToken = token.RefreshToken
+		t.RefreshToken = token.RefreshToken
+		err := saveUserAppToken(ctx, &t)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	u := jobNimbusMediatorURL + "/v1/contacts?" + v.Encode()
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
 		return nil, err
 	}
+	t.SetAuthHeader(req)
 
-	resp, err := httpClient.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

@@ -77,9 +77,7 @@ func userApps(ctx context.Context, sub string) ([]tokenInfo, error) {
 	return results, nil
 }
 
-func saveUserAppToken(ctx context.Context, sub string, t *tokenInfo) error {
-
-	t.InfinitySearchUser = sub
+func saveUserAppToken(ctx context.Context, t *tokenInfo) error {
 
 	key := resourceid.NewSystemGeneratedBase32()
 
