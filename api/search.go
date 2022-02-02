@@ -93,12 +93,6 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 		return nil, fmt.Errorf("invlid status code: %d [%s]", resp.StatusCode, string(b))
 	}
 
-	// TODO: reformat response into the Infinity Search format
-	result := SearchResults{
-		Meta:    jobNimbusMetadata,
-		Results: nil,
-	}
-
 	var listResponse jobnimbusclient.ListContactsResponse
 	err = protojson.UnmarshalOptions{
 		DiscardUnknown: false,
@@ -107,7 +101,28 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 		return nil, err
 	}
 
-	return &result, fmt.Errorf("not implemented")
+	var list []ConnectorResult
+	for _, v := range listResponse.Contacts {
+		c := convertJobNimbusContact(v)
+		list = append(list, c)
+	}
+
+	// TODO: reformat response into the Infinity Search format
+	result := SearchResults{
+		Meta:    jobNimbusMetadata,
+		Results: list,
+	}
+
+	return &result, nil
+}
+
+func convertJobNimbusContact(c *jobnimbusclient.Contact) ConnectorResult {
+	return ConnectorResult{
+		Title: c.GivenName + " " + c.FamilyName,
+		// Description: c.Email,
+		Link:   "https://app.jobnimbus.com/contact" + c.Jnid,
+		Kvdata: nil,
+	}
 }
 
 var jobNimbusMetadata = ConnectorMeta{
