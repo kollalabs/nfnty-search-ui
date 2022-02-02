@@ -92,7 +92,9 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 	if err != nil {
 		return nil, err
 	}
-	if token.RefreshToken != t.RefreshToken {
+	// check if access token or refresh token have been rotated
+	// (not all refresh tokens are rotated)
+	if token.RefreshToken != t.RefreshToken || token.AccessToken != t.AccessToken {
 		t.AccessToken = token.RefreshToken
 		t.RefreshToken = token.RefreshToken
 		err := saveUserAppToken(ctx, &t)
