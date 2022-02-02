@@ -15,7 +15,16 @@ var handlers = map[string]func(context.Context, tokenInfo, string) (*SearchResul
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
-	sub := "" // TODO: get sub
+	sub, err := isAuthed(ctx, r)
+	if sub == "" {
+		http.Error(w, "authorization required", http.StatusUnauthorized)
+		return
+	}
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
 	apps, err := userApps(ctx, sub)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
