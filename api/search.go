@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -18,14 +19,13 @@ var handlers = map[string]func(context.Context, tokenInfo, string) (*SearchResul
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
-
 	sub, err := isAuthed(ctx, r)
 	if sub == "" {
 		http.Error(w, "authorization required", http.StatusUnauthorized)
 		return
 	}
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		http.Error(w, "-"+err.Error(), http.StatusUnauthorized)
 		return
 	}
 
@@ -35,21 +35,25 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	response := make(SearchResponse)
 	for _, appToken := range apps {
 		f, ok := handlers[appToken.ConnectorName]
 		if !ok {
 			continue
 		}
-		_, err := f(ctx, appToken, r.URL.Query().Get("filter"))
+		var err error
+		response[appToken.ConnectorName], err = f(ctx, appToken, r.URL.Query().Get("filter"))
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("unable to perform request to [%s] [%s]", appToken.ConnectorName, err), http.StatusInternalServerError)
 			return
 		}
+
 	}
+	_ = json.NewEncoder(w).Encode(response)
 
 }
 
-type SearchResponse map[string]SearchResults
+type SearchResponse map[string]*SearchResults
 
 type SearchResults struct {
 	Meta    ConnectorMeta     `json:"meta"`
@@ -76,14 +80,20 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 		"filter": []string{"filter"},
 	}
 
+	oauthCfg := configs[t.ConnectorName].AuthInfo
+	httpClient := oauthCfg.Client(ctx, t.Token)
+
+	defer func() {
+		// TODO: check if the refresh token has changed on us
+	}()
+
 	u := jobNimbusMediatorURL + "/v1/contacts?" + v.Encode()
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Authorization", "Bearer "+t.AccessToken)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
