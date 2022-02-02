@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -eu
+
+PROJECT=infinity-search-339422
+
+set -x
+gcloud datastore \
+  indexes create index.yaml \
+  --project=${PROJECT}
+
+gcloud datastore \
+  indexes cleanup index.yaml \
+  --project=${PROJECT}

@@ -18,5 +18,5 @@ dist-ssr
 .vercel
 
 # local dev files 
-/api/goserver/credentials
-/api/goserver/goserver/goserver
+/goserver/credentials
+/goserver/goserver

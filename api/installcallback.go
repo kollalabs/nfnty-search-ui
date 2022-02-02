@@ -60,18 +60,20 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	scopes := strings.Split(resp.Extra("scope").(string), " ")
 
 	tok := tokenInfo{
-		Token:         resp,
-		IDToken:       idToken,
-		Scopes:        scopes,
-		ConnectorName: target,
+		Token:              resp,
+		IDToken:            idToken,
+		Scopes:             scopes,
+		ConnectorName:      target,
+		InfinitySearchUser: sub,
 	}
 
-	err = saveUserAppToken(ctx, sub, &tok)
+	err = saveUserAppToken(ctx, &tok)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(tok)
 
 }
