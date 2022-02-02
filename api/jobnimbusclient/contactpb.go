@@ -1,8 +1,12 @@
 package jobnimbusclient
 
 import (
+	"net/http"
+
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+func PlaceHolderHandler(w http.ResponseWriter, r *http.Request) {}
 
 // Response for listContactRequests
 type ListContactsResponse struct {
