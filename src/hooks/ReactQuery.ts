@@ -1,13 +1,12 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { QueryKey } from 'react-query/types/core/types';
+import { useAuth } from '../contexts/AuthContext';
 import { useQuery } from 'react-query';
 
 import { AnyObject } from '../models/CommonModels';
-import { authConfig } from '../config/authConfig';
-import { useAuth } from '../contexts/AuthContext';
 
 const getAxiosInstance = axios.create({
-  baseURL: `${authConfig.audience}/api/`,
+  baseURL: 'https://jobnimbus.api.marketplace.kolla.dev/v1/',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -28,14 +27,17 @@ const useReactQuery = <T>(
   key: QueryKey,
   url: string,
   requestOptions: AxiosRequestConfig,
-  reactQueryConfig?: AnyObject
+  reactQueryConfig?: AnyObject,
+  appendAuthHeaders: boolean = false
 ) => {
   const token = useAuth();
 
   const headers: AxiosRequestConfig = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: appendAuthHeaders
+      ? {
+          Authorization: `Bearer ${token}`,
+        }
+      : {},
     ...requestOptions.headers,
   };
 
