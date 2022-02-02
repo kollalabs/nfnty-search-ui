@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/kollalabs/nfnty-search-ui/api/jobnimbusclient"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -117,12 +118,24 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 }
 
 func convertJobNimbusContact(c *jobnimbusclient.Contact) ConnectorResult {
+	name := strings.TrimSpace(c.GivenName + " " + c.FamilyName)
+	data := make(map[string]string)
+	addIfSet(data, "Company", c.Company)
+	// TODO: get contact methods in here
+
 	return ConnectorResult{
-		Title: c.GivenName + " " + c.FamilyName,
-		// Description: c.Email,
-		Link:   "https://app.jobnimbus.com/contact" + c.Jnid,
-		Kvdata: nil,
+		Title:       "Contact - " + name,
+		Description: name + " is a contact in Job Nimbus",
+		Link:        "https://app.jobnimbus.com/contact" + c.Jnid,
+		Kvdata:      data,
 	}
+}
+
+func addIfSet(data map[string]string, label string, value string) {
+	if value == "" {
+		return
+	}
+	data[label] = value
 }
 
 var jobNimbusMetadata = ConnectorMeta{
