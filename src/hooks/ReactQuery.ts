@@ -23,6 +23,7 @@ function customAxios<T>(url: string, requestOptions: AxiosRequestConfig): Promis
     });
 }
 
+// TODO: Refactor useAuth code to decouple it from this hook
 const useReactQuery = <T>(
   key: QueryKey,
   url: string,
