@@ -137,7 +137,7 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 
 	// TODO: reformat response into the Infinity Search format
 	result := SearchResults{
-		Meta:    jobNimbusMetadata,
+		Meta:    cfg.SearchMetadata(),
 		Results: list,
 	}
 
@@ -163,10 +163,4 @@ func addIfSet(data map[string]string, label string, value string) {
 		return
 	}
 	data[label] = value
-}
-
-var jobNimbusMetadata = ConnectorMeta{
-	Name:        "connectors/job-nimbus",
-	Logo:        "https://3401zs241c1u3z7ulj3z6g7u-wpengine.netdna-ssl.com/wp-content/uploads/2020/10/cropped-5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x-32x32.png",
-	DisplayName: "JobNimbus",
 }

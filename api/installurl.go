@@ -14,6 +14,14 @@ type connectorConfig struct {
 	AuthInfo      oauth2.Config
 }
 
+func (c *connectorConfig) SearchMetadata() ConnectorMeta {
+	return ConnectorMeta{
+		Name:        c.ConnectorInfo.Name,
+		Logo:        c.ConnectorInfo.Logo,
+		DisplayName: c.ConnectorInfo.DisplayName,
+	}
+}
+
 type connectorInfo struct {
 	Name        string
 	DisplayName string
