@@ -5,9 +5,9 @@ import React from 'react';
 import NoResults from '../../components/search/NoResults';
 import PreSearch from '../../components/search/PreSearch';
 import SearchBar from '../../components/search/SearchBar';
+import useApiQuery from '../../hooks/ApiQuery';
 import useAuthCheck from '../../hooks/AuthCheck';
 import useDocumentTitle from '../../hooks/DocumentTitle';
-import useReactQuery from '../../hooks/ReactQuery';
 import { Connection } from '../../models/DataModels';
 import { SearchItems } from './SearchItems';
 import { useAppSearch } from '../../contexts/SearchContext';
@@ -21,7 +21,7 @@ const Search = () => {
   const { query } = useAppSearch();
   const debouncedValue = useDebounce<string>(query, 200);
 
-  const searchQuery = useReactQuery<Connection>(
+  const searchQuery = useApiQuery<Connection>(
     ['search', debouncedValue],
     `search?filter=${debouncedValue}`,
     {

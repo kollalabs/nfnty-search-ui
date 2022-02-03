@@ -17,7 +17,13 @@ import RequireAuth from './auth/RequireAuth';
 import Search from '../pages/search/Search';
 import { AppSearchProvider } from '../contexts/SearchContext';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const AppLayout = () => {
   return (
