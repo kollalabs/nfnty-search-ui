@@ -140,6 +140,7 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 
 	var listResponse jobnimbusclient.ListContactsResponse
 	err = protojson.UnmarshalOptions{
+		UseProtoNames:  true,
 		DiscardUnknown: false,
 	}.Unmarshal(b, &listResponse)
 	if err != nil {
