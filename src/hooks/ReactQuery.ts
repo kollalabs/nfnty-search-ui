@@ -7,7 +7,7 @@ import { authConfig } from '../config/authConfig';
 import { useAuth } from '../contexts/AuthContext';
 
 const getAxiosInstance = axios.create({
-  baseURL: `${authConfig.audience}/api/`,
+  baseURL: `/api/`,
   headers: {
     'Content-Type': 'application/json',
   },

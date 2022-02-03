@@ -152,7 +152,6 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 		list = append(list, c)
 	}
 
-	fmt.Println(len(listResponse.Contacts), listResponse.Contacts)
 	result := SearchResults{
 		Meta:    cfg.SearchMetadata(),
 		Results: list,
