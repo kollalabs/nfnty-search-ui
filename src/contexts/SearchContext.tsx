@@ -1,22 +1,17 @@
-import React, { useState } from 'react';
+import React, { PropsWithChildren, useState } from 'react';
 
 type SetState = (query: string) => void;
-type AppSearchProviderProps = { children: React.ReactNode };
 
-// query is the state
-// SearchHandler is a function for changing the state.
 export const SearchContext = React.createContext<
   { query: string; queryHandler: SetState } | undefined
 >(undefined);
 
-const AppSearchProvider = ({ children }: AppSearchProviderProps) => {
+const AppSearchProvider = ({ children }: PropsWithChildren<any>) => {
   const [query, queryHandler] = useState('');
 
   const value = { query, queryHandler };
 
-  return (
-    <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
-  );
+  return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>;
 };
 
 const useAppSearch = () => {
