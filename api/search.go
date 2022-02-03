@@ -110,7 +110,7 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 	// check if access token or refresh token have been rotated
 	// (not all refresh tokens are rotated)
 	if token.RefreshToken != t.RefreshToken || token.AccessToken != t.AccessToken {
-		t.AccessToken = token.RefreshToken
+		t.AccessToken = token.AccessToken
 		t.RefreshToken = token.RefreshToken
 		t.Expiry = token.Expiry
 
@@ -135,7 +135,7 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 
 	b, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode >= 300 {
-		return nil, fmt.Errorf("invlid status code: %d [%s]", resp.StatusCode, string(b))
+		return nil, fmt.Errorf("invalid status code: %d [%s]", resp.StatusCode, string(b))
 	}
 
 	var listResponse jobnimbusclient.ListContactsResponse
