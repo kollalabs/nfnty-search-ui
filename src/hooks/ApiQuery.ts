@@ -12,7 +12,7 @@ const getAxiosInstance = axios.create({
   },
 });
 
-function customAxios<T>(url: string, requestOptions: AxiosRequestConfig): Promise<T[]> {
+function customAxios<T>(url: string, requestOptions: AxiosRequestConfig): Promise<T> {
   return getAxiosInstance({
     url: url,
     ...requestOptions,
@@ -24,7 +24,7 @@ function customAxios<T>(url: string, requestOptions: AxiosRequestConfig): Promis
 }
 
 // TODO: Refactor useAuth code to decouple it from this hook
-const useReactQuery = <T>(
+const useApiQuery = <T>(
   key: QueryKey,
   url: string,
   requestOptions: AxiosRequestConfig,
@@ -42,7 +42,7 @@ const useReactQuery = <T>(
     ...requestOptions.headers,
   };
 
-  return useQuery<T[], Error>(
+  return useQuery<T, Error>(
     key,
     ({ signal }) => {
       return customAxios<T>(url, {
@@ -55,4 +55,4 @@ const useReactQuery = <T>(
   );
 };
 
-export default useReactQuery;
+export default useApiQuery;

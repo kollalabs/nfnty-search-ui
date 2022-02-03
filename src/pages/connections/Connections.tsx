@@ -4,9 +4,9 @@ import Typography from '@mui/material/Typography';
 
 import CheckError from '../../components/common/ErrorCheck';
 import NoResults from '../../components/search/NoResults';
+import useApiQuery from '../../hooks/ApiQuery';
 import useAuthCheck from '../../hooks/AuthCheck';
 import useDocumentTitle from '../../hooks/DocumentTitle';
-import useReactQuery from '../../hooks/ReactQuery';
 import { ConnectionItems } from './ConnectionItems';
 import { Connector } from '../../models/DataModels';
 
@@ -16,7 +16,7 @@ const Connections = () => {
   useDocumentTitle('Connectors');
   useAuthCheck('/connectors');
 
-  const connectorsQuery = useReactQuery<Connector>(['connectors'], 'connectors', {
+  const connectorsQuery = useApiQuery<Connector>(['connectors'], 'connectors', {
     method: 'GET',
   });
 
