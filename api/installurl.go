@@ -61,6 +61,9 @@ var configs = map[string]connectorConfig{
 // Redirects the user to either the login page or sends them to the providers
 // oauth authorization page
 func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodOptions {
+		return
+	}
 
 	cfg, ok := configs[r.URL.Query().Get("target")]
 	if !ok {

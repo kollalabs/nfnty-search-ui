@@ -21,6 +21,10 @@ type Connector struct {
 }
 
 func ConnectorsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodOptions {
+		return
+	}
+
 	// TODO: check auth, if authed, load all connected apps
 	// TODO: only return install url if the user is logged in
 	ctx := r.Context()

@@ -18,6 +18,10 @@ var handlers = map[string]func(context.Context, tokenInfo, string) (*SearchResul
 }
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodOptions {
+		return
+	}
+
 	ctx := context.Background()
 	sub, err := isAuthed(ctx, r)
 	if sub == "" {
