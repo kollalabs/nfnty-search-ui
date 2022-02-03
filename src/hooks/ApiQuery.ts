@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useQuery } from 'react-query';
 
 import { AnyObject } from '../models/CommonModels';
+import { authConfig } from '../config/authConfig';
 
 const getAxiosInstance = axios.create({
   baseURL: `${authConfig.audience}/api/`,
