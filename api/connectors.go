@@ -12,12 +12,13 @@ type ConnectorsResponse struct {
 }
 
 type Connector struct {
-	Name        string `json:"name"`
-	DisplayName string `json:"display_name"`
-	Logo        string `json:"logo"`
-	LogoSmall   string `json:"logo_small"`
-	Connected   bool   `json:"connected"`
-	InstallURL  string `json:"install_url"`
+	Name           string `json:"name"`
+	DisplayName    string `json:"display_name"`
+	Logo           string `json:"logo"`
+	LogoSmall      string `json:"logo_small"`
+	Connected      bool   `json:"connected"`
+	InstallURL     string `json:"install_url"`
+	MarketplaceURL string `json:"marketplace_url"`
 }
 
 func ConnectorsHandler(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +46,9 @@ func ConnectorsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for i, v := range list {
-			v.InstallURL, err = installURLNoAuthRedirect(configs[v.Name], sub)
+			cfg := configs[v.Name]
+			v.MarketplaceURL = cfg.ConnectorInfo.MarketplaceURL
+			v.InstallURL, err = installURLNoAuthRedirect(cfg, sub)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
