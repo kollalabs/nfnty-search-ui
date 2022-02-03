@@ -23,10 +23,7 @@ const SearchItems = (keys: string[], data: any) => {
 
     const details: Connection = data[item];
     const meta: ConnectionMeta = details.meta as ConnectionMeta;
-    let results: ConnectionDetails[];
-    if (details.results) {
-      results = details.results as ConnectionDetails[];
-    }
+    let results: ConnectionDetails[] = details.results || [] as ConnectionDetails[];
 
     if (meta) {
       header.push(
@@ -49,7 +46,7 @@ const SearchItems = (keys: string[], data: any) => {
     }
 
     if (results) {
-      body = details.results.map((details: ConnectionDetails, index: number) => {
+      body = results.map((details: ConnectionDetails, index: number) => {
         return (
           <Accordion key={index} TransitionProps={{ unmountOnExit: true }}>
             <AccordionSummary
