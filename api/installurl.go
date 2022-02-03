@@ -23,20 +23,22 @@ func (c *connectorConfig) SearchMetadata() ConnectorMeta {
 }
 
 type connectorInfo struct {
-	Name        string
-	DisplayName string
-	Logo        string
-	LogoSmall   string
+	Name           string
+	DisplayName    string
+	Logo           string
+	LogoSmall      string
+	MarketplaceURL string
 }
 
 // TODO: move into a file that is loaded at startup
 var configs = map[string]connectorConfig{
 	"connectors/job-nimbus": {
 		ConnectorInfo: connectorInfo{
-			Name:        "connectors/job-nimbus",
-			DisplayName: "Job Nimbus",
-			Logo:        "https://www.jobnimbus.com/wp-content/uploads/2020/10/5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x.png",
-			LogoSmall:   "https://www.jobnimbus.com/wp-content/uploads/2020/10/cropped-5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x-32x32.png",
+			Name:           "connectors/job-nimbus",
+			DisplayName:    "Job Nimbus",
+			Logo:           "https://www.jobnimbus.com/wp-content/uploads/2020/10/5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x.png",
+			LogoSmall:      "https://www.jobnimbus.com/wp-content/uploads/2020/10/cropped-5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x-32x32.png",
+			MarketplaceURL: "https://jobnimbus.kolla.market/",
 		},
 		Audience: "https://data.job-nimbus.program.kolla.dev",
 		AuthInfo: oauth2.Config{
