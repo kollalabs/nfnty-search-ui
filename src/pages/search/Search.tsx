@@ -23,7 +23,7 @@ const Search = () => {
 
   const searchQuery = useReactQuery<Connection>(
     ['search', debouncedValue],
-    `search?text=${debouncedValue}`,
+    `search?filter=${debouncedValue}`,
     {
       method: 'GET',
     },
