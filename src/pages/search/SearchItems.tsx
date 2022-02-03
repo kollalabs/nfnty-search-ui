@@ -46,7 +46,7 @@ const SearchItems = (keys: string[], data: any) => {
     }
 
     if (results) {
-      body = details.results.map((details: ConnectionDetails, index: number) => {
+      body = results.map((details: ConnectionDetails, index: number) => {
         return (
           <Accordion key={index} TransitionProps={{ unmountOnExit: true }}>
             <AccordionSummary

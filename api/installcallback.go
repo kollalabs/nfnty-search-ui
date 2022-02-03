@@ -14,6 +14,10 @@ import (
 // Handles steps 3, 4, and 5 of the Authorization code flow
 
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodOptions {
+		return
+	}
+
 	ctx := r.Context()
 
 	errorResponse := r.URL.Query().Get("error")

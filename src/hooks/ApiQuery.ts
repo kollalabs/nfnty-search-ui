@@ -6,7 +6,7 @@ import { useQuery } from 'react-query';
 import { AnyObject } from '../models/CommonModels';
 
 const getAxiosInstance = axios.create({
-  baseURL: `/api/`,
+  baseURL: `${authConfig.audience}/api/`,
   headers: {
     'Content-Type': 'application/json',
   },
