@@ -6,7 +6,7 @@ import { useQuery } from 'react-query';
 import { AnyObject } from '../models/CommonModels';
 
 const getAxiosInstance = axios.create({
-  baseURL: 'https://jobnimbus.api.marketplace.kolla.dev/v1/',
+  baseURL: `/api/`,
   headers: {
     'Content-Type': 'application/json',
   },

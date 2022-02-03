@@ -110,7 +110,7 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 	// check if access token or refresh token have been rotated
 	// (not all refresh tokens are rotated)
 	if token.RefreshToken != t.RefreshToken || token.AccessToken != t.AccessToken {
-		t.AccessToken = token.RefreshToken
+		t.AccessToken = token.AccessToken
 		t.RefreshToken = token.RefreshToken
 		t.Expiry = token.Expiry
 
@@ -135,7 +135,7 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 
 	b, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode >= 300 {
-		return nil, fmt.Errorf("invlid status code: %d [%s]", resp.StatusCode, string(b))
+		return nil, fmt.Errorf("invalid status code: %d [%s]", resp.StatusCode, string(b))
 	}
 
 	var listResponse jobnimbusclient.ListContactsResponse
@@ -152,7 +152,6 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 		list = append(list, c)
 	}
 
-	fmt.Println(len(listResponse.Contacts), listResponse.Contacts)
 	result := SearchResults{
 		Meta:    cfg.SearchMetadata(),
 		Results: list,
@@ -168,6 +167,11 @@ func convertJobNimbusContact(c *jobnimbusclient.Contact) ConnectorResult {
 	}
 	data := make(map[string]string)
 	addIfSet(data, "Company", c.Company)
+	addIfSet(data, "Home Phone", c.PhoneHome)
+	addIfSet(data, "Mobile Phone", c.PhoneMobile)
+	addIfSet(data, "Work Phone", c.PhoneWork)
+	addIfSet(data, "Other Phone", c.PhoneOther)
+	addIfSet(data, "Email", c.Email)
 	// TODO: get contact methods in here
 
 	return ConnectorResult{
