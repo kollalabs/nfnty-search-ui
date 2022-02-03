@@ -23,7 +23,10 @@ const SearchItems = (keys: string[], data: any) => {
 
     const details: Connection = data[item];
     const meta: ConnectionMeta = details.meta as ConnectionMeta;
-    const results: ConnectionDetails[] = details.results || [] as ConnectionDetails[];
+    let results: ConnectionDetails[];
+    if (details.results) {
+      results = details.results as ConnectionDetails[];
+    }
 
     if (meta) {
       header.push(
