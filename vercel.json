@@ -30,7 +30,11 @@
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/",
+      "destination": "/start.html"
+    },
+    {
+      "source": "/(.+)",
       "destination": "/"
     }
   ]
