@@ -32,10 +32,6 @@
     {
       "source": "/(.*)",
       "destination": "/"
-    },
-    {
-      "source": "/",
-      "destination": "/start.html"
     }
   ]
 }
