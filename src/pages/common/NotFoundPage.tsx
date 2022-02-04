@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 
 const NotFoundPage = () => {
@@ -10,7 +11,7 @@ const NotFoundPage = () => {
     }
   });
 
-  return null;
+  return <Navigate to={'/login'} replace />;
 };
 
 export default NotFoundPage;
