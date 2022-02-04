@@ -40,7 +40,7 @@ const Search = () => {
   return (
     <>
       <SearchBar />
-      {searchQuery.isFetching && <SearchSkeleton />}
+      {!searchQuery.data && searchQuery.isFetching && <SearchSkeleton />}
       {searchQuery.error instanceof Error && (
         <CheckError error={searchQuery.error} apiRefresh={searchQuery.refetch} />
       )}
