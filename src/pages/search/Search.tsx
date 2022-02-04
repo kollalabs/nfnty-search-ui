@@ -1,10 +1,10 @@
 import CheckError from '../../components/common/ErrorCheck';
-import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
 
 import NoResults from '../../components/search/NoResults';
 import PreSearch from '../../components/search/PreSearch';
 import SearchBar from '../../components/search/SearchBar';
+import SearchSkeleton from '../../components/skeletons/SearchSkeleton';
 import useApiQuery from '../../hooks/ApiQuery';
 import useAuthCheck from '../../hooks/AuthCheck';
 import useDocumentTitle from '../../hooks/DocumentTitle';
@@ -40,7 +40,7 @@ const Search = () => {
   return (
     <>
       <SearchBar />
-      {searchQuery.isFetching && <CircularProgress />}
+      {searchQuery.isFetching && <SearchSkeleton />}
       {searchQuery.error instanceof Error && (
         <CheckError error={searchQuery.error} apiRefresh={searchQuery.refetch} />
       )}
