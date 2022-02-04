@@ -10,7 +10,7 @@ ReactDOM.render(
     <Auth0Provider
       domain={authConfig.domain}
       clientId="2feXxLBCFHqtoNA05PdcrI3aqVsXbvu4"
-      audience={`https://${authConfig.domain}/api/v2/`}
+      audience={`https://${authConfig.audience}`}
       scope={authConfig.scope}
       redirectUri={`${window.location.origin}/auth-callback`}
       useRefreshTokens={true}

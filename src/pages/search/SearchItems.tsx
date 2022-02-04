@@ -7,9 +7,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Link from '@mui/material/Link';
 import React from 'react';
 import Typography from '@mui/material/Typography';
-import { toast } from 'react-toastify';
 
 import { Connection, ConnectionDetails, ConnectionMeta } from '../../models/DataModels';
+import { handleExternal } from '../../utils/Events';
 
 const SearchItems = (keys: string[], data: any) => {
   let header: any[] = [];
@@ -21,15 +21,6 @@ const SearchItems = (keys: string[], data: any) => {
 
     if (item === 'subscriber') {
       return;
-    }
-
-    function handleExternal(url: string | undefined) {
-      if (url) {
-        window.open(url, '_blank');
-      } else {
-        console.log('No URL found.');
-        toast('Unable to connect to URL', { type: 'warning' });
-      }
     }
 
     const details: Connection = data[item];
