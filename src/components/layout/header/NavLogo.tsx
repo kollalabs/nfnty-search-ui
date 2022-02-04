@@ -10,7 +10,7 @@ const NavLogo = ({ narrow }: any) => {
 
   return (
     <Box sx={sx}>
-      <Link to={'/apps'}>
+      <Link to={'/search'}>
         <img src={imgUrl} style={{ maxWidth: '100%', height: '2rem' }} />
       </Link>
     </Box>
