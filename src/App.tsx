@@ -14,7 +14,12 @@ const App: React.FC = () => {
   const { isLoading, error } = useAuth0();
 
   if (isLoading) return <FullScreenLoader />;
-  if (error) return <Alert severity="error">Oops... {error.message}</Alert>;
+  if (error) {
+    if (error?.message && error.message.toLocaleLowerCase() === 'invalid state') {
+      window.location.href = '/';
+    }
+    return <Alert severity="error">Oops... {error.message}</Alert>;
+  }
 
   return (
     <ThemeProvider theme={theme}>
