@@ -6,10 +6,8 @@ import Typography from '@mui/material/Typography';
 import useApiQuery from '../../hooks/ApiQuery';
 import useAuthCheck from '../../hooks/AuthCheck';
 import useDocumentTitle from '../../hooks/DocumentTitle';
-
 import { Connector } from '../../models/DataModels';
 import { useLocation } from 'react-router-dom';
-
 
 const Install = () => {
   let connectors: string[] = [];
@@ -22,6 +20,9 @@ const Install = () => {
 
   const connectorsQuery = useApiQuery<Connector>(['connectors'], 'connectors', {
     method: 'GET',
+  },
+    {
+    enabled: true,
   });
 
   return (
