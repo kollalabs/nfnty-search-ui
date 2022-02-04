@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 
 import AuthCallback from './auth/AuthCallback';
 import Connections from '../pages/connections/Connections';
+import Install from '../pages/connections/Install';
 import Footer from './layout/footer/Footer';
 import FooterNavMenu from './layout/footer/FooterNavMenu';
 import Header from './layout/header/Header';
@@ -53,6 +54,14 @@ const AppLayout = () => {
                 element={
                   <RequireAuth>
                     <Connections />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path={'/install'}
+                element={
+                  <RequireAuth>
+                    <Install />
                   </RequireAuth>
                 }
               />

@@ -20,3 +20,5 @@ RUN cd ~; \
     ./google-cloud-sdk/install.sh -q; \
     echo 'export PATH=$PATH:~/google-cloud-sdk/bin' >> ~/.bashrc; \
     rm gcloud.tar.gz;
+
+RUN npm i -g pnpm
