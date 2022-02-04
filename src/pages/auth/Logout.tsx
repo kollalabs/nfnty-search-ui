@@ -8,7 +8,7 @@ function Logout() {
   const { logout } = useAuth0();
 
   useEffect(() => {
-    logout({ returnTo: `${window.location.origin}/start.html` });
+    logout({ returnTo: `${window.location.origin}/` });
   });
   return <CircularProgress />;
 }
