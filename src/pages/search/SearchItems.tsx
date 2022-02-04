@@ -1,6 +1,7 @@
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
+import Alert from '@mui/material/Alert';
 import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -47,7 +48,7 @@ const SearchItems = (keys: string[], data: any) => {
       );
     }
 
-    if (results) {
+    if (results && results.length) {
       body = results.map((details: ConnectionDetails, index: number) => {
         return (
           <Accordion key={index} TransitionProps={{ unmountOnExit: true }}>
@@ -71,6 +72,8 @@ const SearchItems = (keys: string[], data: any) => {
           </Accordion>
         );
       });
+    } else {
+      return <Alert severity="info">No Results</Alert>;
     }
     return [header, body];
   });

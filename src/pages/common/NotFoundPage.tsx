@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import Typography from '@mui/material/Typography';
+import { Link, useLocation } from 'react-router-dom';
 
 const NotFoundPage = () => {
   const location = useLocation();
@@ -10,7 +11,12 @@ const NotFoundPage = () => {
     }
   });
 
-  return null;
+  return (
+    <>
+      <Typography variant={'body1'}>Whoa, where did you come from?</Typography>
+      <Link to={'/'}>Go Home</Link>
+    </>
+  );
 };
 
 export default NotFoundPage;
