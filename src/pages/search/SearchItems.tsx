@@ -17,13 +17,14 @@ const SearchItems = (keys: string[], data: any) => {
     header = [];
     body = [];
 
+    console.log('ITEM', item);
     if (item === 'subscriber') {
       return;
     }
 
     const details: Connection = data[item];
     const meta: ConnectionMeta = details.meta as ConnectionMeta;
-    const results: ConnectionDetails[] = details.results || [] as ConnectionDetails[];
+    const results: ConnectionDetails[] = details.results || ([] as ConnectionDetails[]);
 
     if (meta) {
       header.push(
@@ -36,7 +37,7 @@ const SearchItems = (keys: string[], data: any) => {
               mr: 2,
             }}
           >
-            <img src={meta.logo} alt={'Connection Logo'} />
+            <img src={meta.logo} alt={'Connection Logo'} style={{ maxWidth: '50px' }} />
           </Badge>
           <Typography variant={'h6'} sx={{ display: 'inline-block' }}>
             {meta.display_name} Results:

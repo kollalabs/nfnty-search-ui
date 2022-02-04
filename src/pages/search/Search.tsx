@@ -48,7 +48,11 @@ const Search = () => {
         <PreSearch message={'Hey, start searching!'} />
       )}
       {results.length > 0 && SearchItems(results, searchQuery.data)}
-      {!searchQuery.isFetching && query.length > 0 && results.length === 0 && <NoResults />}
+      {(!searchQuery.isFetching || !searchQuery.isLoading) &&
+        searchQuery.isSuccess &&
+        searchQuery.data &&
+        query.length > 0 &&
+        results.length === 0 && <NoResults />}
     </>
   );
 };
