@@ -16,7 +16,7 @@ import { useDebounce } from '../../hooks/Utilities';
 const Search = () => {
   let results: string[] = [];
 
-  useDocumentTitle('App Search');
+  useDocumentTitle('Search all the things');
   useAuthCheck();
   const { query } = useAppSearch();
   const debouncedValue = useDebounce<string>(query, 200);
