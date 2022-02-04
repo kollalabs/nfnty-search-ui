@@ -4,8 +4,8 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Link from '@mui/material/Link';
 import React from 'react';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { toast } from 'react-toastify';
 
@@ -73,19 +73,9 @@ const SearchItems = (keys: string[], data: any) => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              {/*<Link href="#" onClick={handleExternal}>*/}
-              {/*  {details?.link || 'N/A'}*/}
-              {/*</Link>*/}
-              <TextField
-                sx={{ fontFamily: 'Monospace' }}
-                aria-readonly
-                disabled
-                fullWidth={true}
-                id="outlined-basic"
-                label="Link"
-                variant={'filled'}
-                value={details?.link || 'N/A'}
-              />
+              <Link href="#" onClick={() => handleExternal(details?.link)}>
+                {details?.link || 'N/A'}
+              </Link>
             </AccordionDetails>
           </Accordion>
         );
