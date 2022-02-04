@@ -6,12 +6,12 @@ import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 import AuthCallback from './auth/AuthCallback';
-import Connections from '../pages/connections/Connections';
-import Install from '../pages/connections/Install';
+import Connectors from '../pages/connectors/Connectors';
 import Footer from './layout/footer/Footer';
 import FooterNavMenu from './layout/footer/FooterNavMenu';
 import Header from './layout/header/Header';
 import HeaderNavMenu from './layout/header/HeaderNavMenu';
+import Install from '../pages/connectors/Install';
 import Login from '../pages/auth/Login';
 import Logout from '../pages/auth/Logout';
 import NotFoundPage from '../pages/common/NotFoundPage';
@@ -53,7 +53,7 @@ const AppLayout = () => {
                 path={'/connectors'}
                 element={
                   <RequireAuth>
-                    <Connections />
+                    <Connectors />
                   </RequireAuth>
                 }
               />
