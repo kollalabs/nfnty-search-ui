@@ -96,7 +96,9 @@ const jobNimbusMediatorURL = "https://c-job-nimbus-7dgilp22pa-uc.a.run.app"
 
 func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchResults, error) {
 	v := url.Values{
-		"filter": []string{filter},
+		"filter":    []string{filter},
+		"pageSize":  []string{"5"},
+		"page_size": []string{"5"},
 	}
 
 	// TODO: this whole refresh token blob needs to be extracted into a more
