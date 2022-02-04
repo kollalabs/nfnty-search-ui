@@ -7,6 +7,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React from 'react';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { toast } from 'react-toastify';
+
 import { Connection, ConnectionDetails, ConnectionMeta } from '../../models/DataModels';
 
 const SearchItems = (keys: string[], data: any) => {
@@ -17,9 +19,17 @@ const SearchItems = (keys: string[], data: any) => {
     header = [];
     body = [];
 
-    console.log('ITEM', item);
     if (item === 'subscriber') {
       return;
+    }
+
+    function handleExternal(url: string | undefined) {
+      if (url) {
+        window.open(url, '_blank');
+      } else {
+        console.log('No URL found.');
+        toast('Unable to connect to URL', { type: 'warning' });
+      }
     }
 
     const details: Connection = data[item];
@@ -63,6 +73,9 @@ const SearchItems = (keys: string[], data: any) => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
+              {/*<Link href="#" onClick={handleExternal}>*/}
+              {/*  {details?.link || 'N/A'}*/}
+              {/*</Link>*/}
               <TextField
                 sx={{ fontFamily: 'Monospace' }}
                 aria-readonly
