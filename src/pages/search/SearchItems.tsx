@@ -17,6 +17,7 @@ const SearchItems = (keys: string[], data: any) => {
     header = [];
     body = [];
 
+    console.log('ITEM', item);
     if (item === 'subscriber') {
       return;
     }
