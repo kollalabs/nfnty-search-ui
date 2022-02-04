@@ -1,6 +1,6 @@
 const authConfig: any = {
   audience: 'https://infinitysearch.xyz',
-  domain: 'infinitysearch.us.auth0.com',
+  domain: 'auth.infinitysearch.xyz',
   scope: 'openid profile email',
 };
 
