@@ -29,7 +29,6 @@ const useApiQuery = <T>(
     ...requestOptions?.headers,
   };
 
-  console.log('setting up useApiQuery', key, url, headers);
   return useQuery<T, Error>(
     key,
     ({ signal }) => {

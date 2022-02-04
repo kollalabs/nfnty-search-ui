@@ -4,6 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import React from 'react';
 import Typography from '@mui/material/Typography';
 import { Connector } from '../../models/DataModels';
+import { handleExternal } from '../../utils/Events';
 
 const ConnectionItems = (keys: string[], data: any) => {
   let header: any[] = [];
@@ -28,7 +29,14 @@ const ConnectionItems = (keys: string[], data: any) => {
               mr: 2,
             }}
           >
-            <CardContent sx={{ textAlign: 'center' }}>
+            <CardContent
+              sx={{ textAlign: 'center', cursor: 'pointer' }}
+              onClick={() =>
+                handleExternal(
+                  'https://jobnimbus.kolla.market/apps/wuv6u4oesbdalgoygino2k2hjm/landing'
+                )
+              }
+            >
               <Avatar src={connector.logo} sx={{ width: 64, height: 64, mx: 'auto', mb: 2 }} />
               <Typography variant={'h5'} component={'h2'}>
                 {connector.display_name}
