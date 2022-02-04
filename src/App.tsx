@@ -11,7 +11,6 @@ import { AuthProvider } from './contexts/AuthContext';
 
 const App: React.FC = () => {
   const [theme] = useColorMode();
-  const token = localStorage.getItem('user');
   const { isLoading, error } = useAuth0();
 
   if (isLoading) return <FullScreenLoader />;
@@ -20,7 +19,7 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthProvider token={token}>
+      <AuthProvider>
         <RoutesMap />
       </AuthProvider>
     </ThemeProvider>

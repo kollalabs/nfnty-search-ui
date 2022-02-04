@@ -3,6 +3,7 @@ import Grid from '@mui/material/Grid';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Route, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
 import AuthCallback from './auth/AuthCallback';
 import Connections from '../pages/connections/Connections';
@@ -60,6 +61,7 @@ const AppLayout = () => {
           <Footer>
             <FooterNavMenu />
           </Footer>
+          <ToastContainer limit={3} />
         </AppSearchProvider>
       </QueryClientProvider>
     </Container>
