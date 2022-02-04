@@ -14,7 +14,7 @@ const NotFoundPage = () => {
   return (
     <>
       <Typography variant={'body1'}>Whoa, where did you come from?</Typography>
-      <Link to={'/'}>Go Home</Link>
+      <Link to={'/search'}>Go Home</Link>
     </>
   );
 };
