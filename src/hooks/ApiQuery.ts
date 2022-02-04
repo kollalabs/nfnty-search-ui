@@ -6,13 +6,12 @@ import { useQuery } from 'react-query';
 import { AnyObject } from '../models/CommonModels';
 import { authConfig } from '../config/authConfig';
 
-const getAxiosInstance = axios.create({
+const axiosInstance = axios.create({
   baseURL: `${authConfig.audience}/api/`,
   headers: {
     'Content-Type': 'application/json',
   },
 });
-
 
 // TODO: Refactor useAuth code to decouple it from this hook
 const useApiQuery = <T>(
@@ -30,21 +29,23 @@ const useApiQuery = <T>(
     ...requestOptions?.headers,
   };
 
+  console.log('setting up useApiQuery', key, url, headers);
   return useQuery<T, Error>(
     key,
     ({ signal }) => {
-      return getAxiosInstance({
-    url: url,
-    ...requestOptions,
-  })
-    .then((response) => response.data)
-    .catch((error: AxiosError) => {
-      throw error;
-    });
-
+      return axiosInstance({
+        url: url,
+        ...requestOptions,
+        ...headers,
+        ...signal,
+      })
+        .then((response) => response.data)
+        .catch((error: AxiosError) => {
+          throw error;
+        });
     },
     { ...reactQueryConfig }
   );
 };
 
-export default useApiQuery;
+export { useApiQuery as default, axiosInstance };
