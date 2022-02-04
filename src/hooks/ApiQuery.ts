@@ -28,19 +28,16 @@ function customAxios<T>(url: string, requestOptions: AxiosRequestConfig): Promis
 const useApiQuery = <T>(
   key: QueryKey,
   url: string,
-  requestOptions: AxiosRequestConfig,
-  reactQueryConfig?: AnyObject,
-  appendAuthHeaders: boolean = false
+  requestOptions: AxiosRequestConfig | null,
+  reactQueryConfig?: AnyObject | null
 ) => {
   const token = useAuth();
 
   const headers: AxiosRequestConfig = {
-    headers: appendAuthHeaders
-      ? {
-          Authorization: `Bearer ${token}`,
-        }
-      : {},
-    ...requestOptions.headers,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    ...requestOptions?.headers,
   };
 
   return useQuery<T, Error>(
