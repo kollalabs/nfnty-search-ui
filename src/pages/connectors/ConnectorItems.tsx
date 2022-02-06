@@ -51,7 +51,7 @@ const ConnectorItems = (keys: string[], data: any) => {
                   title={
                     <React.Fragment>
                       <Typography color="inherit">Connected</Typography>
-                      {'Yay! This connector ready to go.'}
+                      {'Yay! This connector is ready to go.'}
                     </React.Fragment>
                   }
                 >
