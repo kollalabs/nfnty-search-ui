@@ -8,7 +8,6 @@ import useApiQuery from '../../hooks/ApiQuery';
 import useAuthCheck from '../../hooks/AuthCheck';
 import useDocumentTitle from '../../hooks/DocumentTitle';
 import { Connector } from '../../models/DataModels';
-// import { useAuth } from '../../contexts/AuthContext';
 
 const Install = () => {
   let connectors: string[] = [];
@@ -25,7 +24,6 @@ const Install = () => {
       method: 'GET',
     },
     {
-      // enabled: Boolean(token && token.length > 0),
       enabled: Boolean(target && target.length > 0),
     }
   );
