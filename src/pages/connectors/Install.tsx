@@ -11,48 +11,6 @@ import useDocumentTitle from '../../hooks/DocumentTitle';
 import { Connector } from '../../models/DataModels';
 import { handleExternal } from '../../utils/Events';
 
-const Install = () => {
-  let connectors: string[] = [];
-  let connectorTarget: Connector | undefined = undefined;
-  useDocumentTitle('Install Connector');
-  const search = useLocation().search;
-  const target = new URLSearchParams(search).get('target');
-  useAuthCheck('/install' + search);
-
-  const connectorsQuery = useApiQuery<any>(['connectors'], 'connectors', {
-    method: 'GET',
-  });
-
-  // if (!target) {
-  //   return <CheckError message="No target specified" />;
-  // }
-
-  if (connectorsQuery.data && connectorsQuery.data['connectors']) {
-    connectors = Object.keys(connectorsQuery.data);
-    // connectorTarget = connectorsQuery.data['connectors'].find((c: Connector) => c.name === target);
-    //
-    // if (connectorTarget && connectorTarget.install_url) {
-    //   window.location.href = connectorTarget.install_url;
-    // }
-  }
-
-  return (
-    <>
-      <Typography align={'center'} variant={'h3'} gutterBottom>
-        Install Connector
-      </Typography>
-      {/*{connectorTarget && connectorTarget.install_url.length === 0 && (*/}
-      {/*  <CheckError message="No install url found" />*/}
-      {/*)}*/}
-      {connectorsQuery.isFetching && <CircularProgress />}
-      {connectorsQuery.error && (
-        <CheckError error={connectorsQuery.error} apiRefresh={connectorsQuery.refetch} />
-      )}
-      {connectors.length > 0 && InstallRedirect(connectors, connectorsQuery.data)}
-    </>
-  );
-};
-
 const InstallRedirect = (keys: string[], data: any) => {
   let header: any[] = [];
   let body: any[] = [];
@@ -79,6 +37,47 @@ const InstallRedirect = (keys: string[], data: any) => {
     }
     return [header, body];
   });
+};
+
+const Install = () => {
+  let connectors: string[] = [];
+  let connectorTarget: Connector | undefined = undefined;
+  useDocumentTitle('Install Connector');
+  const search = useLocation().search;
+  const target = new URLSearchParams(search).get('target');
+  useAuthCheck('/install' + search);
+
+  const connectorsQuery = useApiQuery<any>(['connectors'], 'connectors', {
+    method: 'GET',
+  });
+
+  if (target) {
+    connectorTarget = connectorsQuery.data['connectors'].find((c: Connector) => c.name === target);
+
+    if (connectorTarget && connectorTarget.install_url) {
+      window.location.href = connectorTarget.install_url;
+    }
+  } else {
+    if (connectorsQuery.data && connectorsQuery.data['connectors']) {
+      connectors = Object.keys(connectorsQuery.data);
+    }
+  }
+
+  return (
+    <>
+      <Typography align={'center'} variant={'h3'} gutterBottom>
+        Install Connector
+      </Typography>
+      {connectorTarget && connectorTarget.install_url.length === 0 && (
+        <CheckError message="No install url found" />
+      )}
+      {connectorsQuery.isFetching && <CircularProgress />}
+      {connectorsQuery.error && (
+        <CheckError error={connectorsQuery.error} apiRefresh={connectorsQuery.refetch} />
+      )}
+      {connectors.length > 0 && InstallRedirect(connectors, connectorsQuery.data)}
+    </>
+  );
 };
 
 export default Install;
