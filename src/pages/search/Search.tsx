@@ -33,7 +33,6 @@ const Search = () => {
   );
 
   if (searchQuery.data) {
-    // results...
     results = Object.keys(searchQuery.data);
   }
 

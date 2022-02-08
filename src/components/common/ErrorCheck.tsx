@@ -30,7 +30,9 @@ const CheckError = (error: any, apiRefresh?: () => void) => {
       );
     }
     if (error?.message?.toLowerCase() !== 'The user aborted a request') {
-      return <Alert severity="error">Drat... {error?.message || ''}</Alert>;
+      return (
+        <Alert severity="error">Drat... {error?.message || 'An unspecified error occurred'}</Alert>
+      );
     }
   }
 

@@ -1,12 +1,12 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { AuthProps, Token } from '../models/AuthModels';
+import { AccessToken, AuthProps } from '../models/AuthModels';
 import { authConfig } from '../config/authConfig';
 import { useAuth0 } from '@auth0/auth0-react';
 
-const AuthContext = createContext<Token>(null as Token);
+const AuthContext = createContext<AccessToken>(null as AccessToken);
 
 function AuthProvider(props: AuthProps) {
-  const [token, setToken] = useState(null as Token);
+  const [token, setToken] = useState(null as AccessToken);
   const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
@@ -17,11 +17,17 @@ function AuthProvider(props: AuthProps) {
       });
       setToken(accessToken);
     })();
-  }, []);
+  }, [token]);
 
   return <AuthContext.Provider value={token} {...props} />;
 }
 
-const useAuth = () => React.useContext(AuthContext);
+const useAuth = () => {
+  const context = React.useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within a AuthProvider');
+  }
+  return context;
+};
 
 export { AuthProvider, useAuth };

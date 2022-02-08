@@ -10,27 +10,15 @@ import useAuthCheck from '../../hooks/AuthCheck';
 import useDocumentTitle from '../../hooks/DocumentTitle';
 import { Connector } from '../../models/DataModels';
 import { ConnectorItems } from './ConnectorItems';
-import { useAuth } from '../../contexts/AuthContext';
 
 const Connectors = () => {
   let connectors: string[] = [];
   useDocumentTitle('Connectors');
   useAuthCheck('/connectors');
-  const token = useAuth();
 
-  const connectorsQuery = useApiQuery<Connector>(
-    ['connectors'],
-    'connectors',
-    {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-    {
-      enabled: Boolean(token && token.length > 0),
-    }
-  );
+  const connectorsQuery = useApiQuery<Connector>(['connectors'], 'connectors', {
+    method: 'GET',
+  });
 
   if (connectorsQuery.data) {
     // connectors...
