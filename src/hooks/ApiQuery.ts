@@ -1,10 +1,12 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import { AccessToken } from '../models/AuthModels';
 import { QueryKey } from 'react-query/types/core/types';
+import { authConfig } from '../config/authConfig';
 import { useAuth } from '../contexts/AuthContext';
+import { useEffect } from 'react';
 import { useQuery } from 'react-query';
 
 import { AnyObject } from '../models/CommonModels';
-import { authConfig } from '../config/authConfig';
 
 const axiosInstance = axios.create({
   baseURL: `${authConfig.audience}/api/`,
@@ -13,19 +15,21 @@ const axiosInstance = axios.create({
   },
 });
 
-// TODO: Refactor useAuth code to decouple it from this hook
 const useApiQuery = <T>(
   key: QueryKey,
   url: string,
   requestOptions: AxiosRequestConfig | null,
   reactQueryConfig?: AnyObject | null
 ) => {
-  const token = useAuth();
+  const token: AccessToken = useAuth();
+
+  useEffect(() => {
+    if (token) {
+      axiosInstance.defaults.headers.common.Authorization = `Bearer ${token}`;
+    }
+  }, [token]);
 
   const headers: AxiosRequestConfig = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
     ...requestOptions?.headers,
   };
 
@@ -34,12 +38,12 @@ const useApiQuery = <T>(
     ({ signal }) => {
       return axiosInstance({
         url: url,
-        ...requestOptions,
         ...headers,
         ...signal,
       })
         .then((response) => response.data)
         .catch((error: AxiosError) => {
+          console.log('Error inside useQuery:', error);
           throw error;
         });
     },
@@ -47,4 +51,4 @@ const useApiQuery = <T>(
   );
 };
 
-export { useApiQuery as default, axiosInstance };
+export { useApiQuery as default };

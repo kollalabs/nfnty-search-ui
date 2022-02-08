@@ -7,7 +7,6 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 import RoutesMap from './routing/RoutesMap';
 import useColorMode from './contexts/ColorModeContext';
-import { AuthProvider } from './contexts/AuthContext';
 
 const App: React.FC = () => {
   const [theme] = useColorMode();
@@ -24,9 +23,7 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthProvider>
-        <RoutesMap />
-      </AuthProvider>
+      <RoutesMap />
     </ThemeProvider>
   );
 };
