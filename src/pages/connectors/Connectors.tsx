@@ -16,9 +16,13 @@ const Connectors = () => {
   useDocumentTitle('Connectors');
   useAuthCheck('/connectors');
 
-  const connectorsQuery = useApiQuery<Connector>(['connectors'], 'connectors', {
-    method: 'GET',
-  });
+  const connectorsQuery = useApiQuery<{ [_key: string]: Connector[] } | undefined>(
+    ['connectors'],
+    'connectors',
+    {
+      method: 'GET',
+    }
+  );
 
   if (connectorsQuery.data) {
     // connectors...

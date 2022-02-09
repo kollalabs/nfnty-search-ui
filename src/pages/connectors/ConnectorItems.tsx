@@ -14,10 +14,11 @@ const ConnectorItems = ({
   connectorItemsData,
 }: {
   connectorItemsKeys: string[];
-  connectorItemsData: { [_key: string]: Connector[] };
+  connectorItemsData: { [_key: string]: Connector[] } | undefined;
 }): JSX.Element => {
   const connectorItemsOutput = connectorItemsKeys.map((item: string) => {
-    const connectors: Connector[] = connectorItemsData[item];
+    const connectors: Connector[] | undefined =
+      connectorItemsData && (connectorItemsData[item] || []);
 
     if (connectors) {
       return connectors.map((connector: Connector, index: number) => {
