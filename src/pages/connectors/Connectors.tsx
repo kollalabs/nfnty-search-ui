@@ -43,7 +43,12 @@ const Connectors = () => {
         {connectorsQuery.error && (
           <CheckError error={connectorsQuery.error} apiRefresh={connectorsQuery.refetch} />
         )}
-        {connectors.length > 0 && ConnectorItems(connectors, connectorsQuery.data)}
+        {connectors.length > 0 && (
+          <ConnectorItems
+            connectorItemsKeys={connectors}
+            connectorItemsData={connectorsQuery.data}
+          />
+        )}
         {!connectorsQuery.isFetching && connectors.length === 0 && <NoResults />}
       </Box>
     </>

@@ -9,18 +9,17 @@ import Typography from '@mui/material/Typography';
 import { Connector } from '../../models/DataModels';
 import { handleExternal } from '../../utils/Events';
 
-const ConnectorItems = (keys: string[], data: any) => {
-  let header: any[] = [];
+const ConnectorItems = ({
+  connectorItemsKeys,
+  connectorItemsData,
+}: {
+  connectorItemsKeys: string[];
+  connectorItemsData: any;
+}): JSX.Element => {
   let body: any[] = [];
 
-  // if (!data) {
-  //   return <
-  // }
-  return keys.map((item: string, index: number) => {
-    header = [];
-    body = [];
-
-    const connectors: Connector[] = data[item];
+  const connectorItemsOutput = connectorItemsKeys.map((item: string) => {
+    const connectors: Connector[] = connectorItemsData[item];
 
     if (connectors) {
       body = connectors.map((connector: Connector, index: number) => {
@@ -76,8 +75,10 @@ const ConnectorItems = (keys: string[], data: any) => {
         );
       });
     }
-    return [header, body];
+    return [body];
   });
+
+  return <>{connectorItemsOutput}</>;
 };
 
 export { ConnectorItems };

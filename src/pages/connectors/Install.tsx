@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
@@ -11,32 +12,41 @@ import useDocumentTitle from '../../hooks/DocumentTitle';
 import { Connector } from '../../models/DataModels';
 import { handleExternal } from '../../utils/Events';
 
-const InstallRedirect = (keys: string[], data: any) => {
-  let header: any[] = [];
-  let body: any[] = [];
+const InstallRedirect = ({
+  connectorKeys,
+  connectorData,
+}: {
+  connectorKeys: string[];
+  connectorData: any;
+}): JSX.Element => {
+  if (connectorKeys.length === 0) {
+    return <Typography variant="h5">No connectors found</Typography>;
+  }
 
-  return keys.map((item: string, _index: number) => {
-    header = [];
-    body = [];
-
-    const connectors: Connector[] = data[item];
+  const connectorOutput = connectorKeys.map((item: string) => {
+    const connectors: Connector[] = connectorData[item];
 
     if (connectors) {
-      body = connectors.map((connector: Connector, index: number) => {
+      return connectors.map((connector: Connector, index: number) => {
         return (
-          <>
+          <Box key={index}>
             <Typography variant={'h5'} component={'h2'} key={index}>
               {connector.display_name}
             </Typography>
-            <Button key={index} onClick={() => handleExternal(connector?.install_url)}>
-              {'Install'}
-            </Button>
-          </>
+            <Button onClick={() => handleExternal(connector?.install_url)}>{'Install'}</Button>
+          </Box>
         );
       });
+    } else {
+      return (
+        <Typography variant={'h5'} component={'h2'}>
+          {'No connectors found'}
+        </Typography>
+      );
     }
-    return [header, body];
   });
+
+  return <>{connectorOutput}</>;
 };
 
 const Install = () => {
@@ -51,7 +61,7 @@ const Install = () => {
     method: 'GET',
   });
 
-  if (target) {
+  if (target && connectorsQuery.data) {
     connectorTarget = connectorsQuery.data['connectors'].find((c: Connector) => c.name === target);
 
     if (connectorTarget && connectorTarget.install_url) {
@@ -75,7 +85,9 @@ const Install = () => {
       {connectorsQuery.error && (
         <CheckError error={connectorsQuery.error} apiRefresh={connectorsQuery.refetch} />
       )}
-      {connectors.length > 0 && InstallRedirect(connectors, connectorsQuery.data)}
+      {connectors.length > 0 && (
+        <InstallRedirect connectorKeys={connectors} connectorData={connectorsQuery.data} />
+      )}
     </>
   );
 };
