@@ -1,3 +1,5 @@
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import React from 'react';
 import Typography from '@mui/material/Typography';
@@ -8,6 +10,44 @@ import useApiQuery from '../../hooks/ApiQuery';
 import useAuthCheck from '../../hooks/AuthCheck';
 import useDocumentTitle from '../../hooks/DocumentTitle';
 import { Connector } from '../../models/DataModels';
+import { handleExternal } from '../../utils/Events';
+
+const InstallRedirect = ({
+  connectorKeys,
+  connectorData,
+}: {
+  connectorKeys: string[];
+  connectorData: any;
+}): JSX.Element => {
+  if (connectorKeys.length === 0) {
+    return <Typography variant="h5">No connectors found</Typography>;
+  }
+
+  const connectorOutput = connectorKeys.map((item: string) => {
+    const connectors: Connector[] = connectorData[item];
+
+    if (connectors) {
+      return connectors.map((connector: Connector, index: number) => {
+        return (
+          <Box key={index}>
+            <Typography variant={'h5'} component={'h2'} key={index}>
+              {connector.display_name}
+            </Typography>
+            <Button onClick={() => handleExternal(connector?.install_url)}>{'Install'}</Button>
+          </Box>
+        );
+      });
+    } else {
+      return (
+        <Typography variant={'h5'} component={'h2'}>
+          {'No connectors found'}
+        </Typography>
+      );
+    }
+  });
+
+  return <>{connectorOutput}</>;
+};
 
 const Install = () => {
   let connectors: string[] = [];
@@ -17,26 +57,19 @@ const Install = () => {
   const target = new URLSearchParams(search).get('target');
   useAuthCheck('/install' + search);
 
-  const connectorsQuery = useApiQuery<any>(
-    ['connectors'],
-    'connectors',
-    {
-      method: 'GET',
-    },
-    {
-      enabled: Boolean(target && target.length > 0),
-    }
-  );
+  const connectorsQuery = useApiQuery<any>(['connectors'], 'connectors', {
+    method: 'GET',
+  });
 
-  if (!target) {
-    return <CheckError message="No target specified" />;
-  }
-
-  if (connectorsQuery.data && connectorsQuery.data['connectors']) {
+  if (target && connectorsQuery.data) {
     connectorTarget = connectorsQuery.data['connectors'].find((c: Connector) => c.name === target);
 
     if (connectorTarget && connectorTarget.install_url) {
       window.location.href = connectorTarget.install_url;
+    }
+  } else {
+    if (connectorsQuery.data && connectorsQuery.data['connectors']) {
+      connectors = Object.keys(connectorsQuery.data);
     }
   }
 
@@ -52,32 +85,11 @@ const Install = () => {
       {connectorsQuery.error && (
         <CheckError error={connectorsQuery.error} apiRefresh={connectorsQuery.refetch} />
       )}
-      {connectors.length > 0 && InstallRedirect(connectors, connectorsQuery.data)}
+      {connectors.length > 0 && (
+        <InstallRedirect connectorKeys={connectors} connectorData={connectorsQuery.data} />
+      )}
     </>
   );
 };
 
 export default Install;
-
-const InstallRedirect = (keys: string[], data: any) => {
-  let header: any[] = [];
-  let body: any[] = [];
-
-  return keys.map((item: string, _index: number) => {
-    header = [];
-    body = [];
-
-    const connectors: Connector[] = data[item];
-
-    if (connectors) {
-      body = connectors.map((connector: Connector, index: number) => {
-        return (
-          <Typography variant={'h5'} component={'h2'} key={index}>
-            {connector.display_name}
-          </Typography>
-        );
-      });
-    }
-    return [header, body];
-  });
-};

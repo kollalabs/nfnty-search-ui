@@ -16,9 +16,13 @@ const Connectors = () => {
   useDocumentTitle('Connectors');
   useAuthCheck('/connectors');
 
-  const connectorsQuery = useApiQuery<Connector>(['connectors'], 'connectors', {
-    method: 'GET',
-  });
+  const connectorsQuery = useApiQuery<{ [_key: string]: Connector[] } | undefined>(
+    ['connectors'],
+    'connectors',
+    {
+      method: 'GET',
+    }
+  );
 
   if (connectorsQuery.data) {
     // connectors...
@@ -43,7 +47,12 @@ const Connectors = () => {
         {connectorsQuery.error && (
           <CheckError error={connectorsQuery.error} apiRefresh={connectorsQuery.refetch} />
         )}
-        {connectors.length > 0 && ConnectorItems(connectors, connectorsQuery.data)}
+        {connectors.length > 0 && (
+          <ConnectorItems
+            connectorItemsKeys={connectors}
+            connectorItemsData={connectorsQuery.data}
+          />
+        )}
         {!connectorsQuery.isFetching && connectors.length === 0 && <NoResults />}
       </Box>
     </>

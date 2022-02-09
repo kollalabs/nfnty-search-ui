@@ -9,21 +9,19 @@ import Typography from '@mui/material/Typography';
 import { Connector } from '../../models/DataModels';
 import { handleExternal } from '../../utils/Events';
 
-const ConnectorItems = (keys: string[], data: any) => {
-  let header: any[] = [];
-  let body: any[] = [];
-
-  // if (!data) {
-  //   return <
-  // }
-  return keys.map((item: string, index: number) => {
-    header = [];
-    body = [];
-
-    const connectors: Connector[] = data[item];
+const ConnectorItems = ({
+  connectorItemsKeys,
+  connectorItemsData,
+}: {
+  connectorItemsKeys: string[];
+  connectorItemsData: { [_key: string]: Connector[] } | undefined;
+}): JSX.Element => {
+  const connectorItemsOutput = connectorItemsKeys.map((item: string) => {
+    const connectors: Connector[] | undefined =
+      connectorItemsData && (connectorItemsData[item] || []);
 
     if (connectors) {
-      body = connectors.map((connector: Connector, index: number) => {
+      return connectors.map((connector: Connector, index: number) => {
         return (
           <Card
             key={index}
@@ -76,8 +74,9 @@ const ConnectorItems = (keys: string[], data: any) => {
         );
       });
     }
-    return [header, body];
   });
+
+  return <>{connectorItemsOutput}</>;
 };
 
 export { ConnectorItems };
