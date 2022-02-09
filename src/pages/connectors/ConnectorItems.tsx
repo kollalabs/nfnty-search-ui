@@ -14,15 +14,13 @@ const ConnectorItems = ({
   connectorItemsData,
 }: {
   connectorItemsKeys: string[];
-  connectorItemsData: any;
+  connectorItemsData: { [_key: string]: Connector[] };
 }): JSX.Element => {
-  let body: any[] = [];
-
   const connectorItemsOutput = connectorItemsKeys.map((item: string) => {
     const connectors: Connector[] = connectorItemsData[item];
 
     if (connectors) {
-      body = connectors.map((connector: Connector, index: number) => {
+      return connectors.map((connector: Connector, index: number) => {
         return (
           <Card
             key={index}
@@ -75,7 +73,6 @@ const ConnectorItems = ({
         );
       });
     }
-    return [body];
   });
 
   return <>{connectorItemsOutput}</>;
