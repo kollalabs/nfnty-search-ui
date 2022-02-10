@@ -7,7 +7,7 @@ require (
 	github.com/envoyproxy/protoc-gen-validate v0.6.3
 	go.einride.tech/aip v0.54.1
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
-	google.golang.org/api v0.66.0
-	google.golang.org/genproto v0.0.0-20220114231437-d2e6a121cae0
+	google.golang.org/api v0.68.0
+	google.golang.org/genproto v0.0.0-20220204002441-d6cc3cc0770e
 	google.golang.org/protobuf v1.27.1
 )
