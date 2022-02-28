@@ -1,3 +1,5 @@
+# Currently a WIP
+
 # InfinitySearch demo
 
 ### Install `pnpm` globally:
