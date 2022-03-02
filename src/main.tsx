@@ -9,8 +9,6 @@ import { authConfig } from './config/authConfig';
 const providerConfig = {
   ...authConfig,
   redirectUri: `${window.location.origin}/auth-callback`,
-  useRefreshTokens: true,
-  cacheLocation: 'localstorage'
 };
 
 ReactDOM.render(
