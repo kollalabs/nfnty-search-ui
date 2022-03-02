@@ -6,17 +6,16 @@ import App from './App';
 import { AuthProvider } from './contexts/AuthContext';
 import { authConfig } from './config/authConfig';
 
+const providerConfig = {
+  ...authConfig,
+  redirectUri: `${window.location.origin}/auth-callback`,
+  useRefreshTokens: true,
+  cacheLocation: 'localstorage'
+};
+
 ReactDOM.render(
   <React.StrictMode>
-    <Auth0Provider
-      domain={authConfig.domain}
-      clientId="2feXxLBCFHqtoNA05PdcrI3aqVsXbvu4"
-      audience={`${authConfig.audience}`}
-      scope={authConfig.scope}
-      redirectUri={`${window.location.origin}/auth-callback`}
-      useRefreshTokens={true}
-      cacheLocation={'localstorage'}
-    >
+    <Auth0Provider {...providerConfig} >
       <AuthProvider>
         <App />
       </AuthProvider>
