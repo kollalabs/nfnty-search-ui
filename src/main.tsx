@@ -8,7 +8,7 @@ import { authConfig } from './config/authConfig';
 
 const providerConfig = {
   ...authConfig,
-  redirectUri: `${window.location.origin}/auth-callback`,
+  // add additional configuration options here if needed
 };
 
 ReactDOM.render(
