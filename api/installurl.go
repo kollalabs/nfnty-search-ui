@@ -58,6 +58,32 @@ var configs = map[string]connectorConfig{
 			},
 		},
 	},
+	"connectors/fluid": {
+		ConnectorInfo: connectorInfo{
+			Name:           "connectors/fluid",
+			DisplayName:    "Fluid",
+			Logo:           "https://ik.imagekit.io/fluid/s3/logo.svg",
+			LogoSmall:      "https://ik.imagekit.io/fluid/s3/logo.svg",
+			MarketplaceURL: "https://fluid.kolla.market/",
+		},
+		Audience: "https://data.fluid.program.kolla.dev",
+		AuthInfo: oauth2.Config{
+			ClientID:     os.Getenv("FLUID_CLIENT_ID"),
+			ClientSecret: os.Getenv("FLUID_CLIENT_SECRET"),
+			Endpoint: oauth2.Endpoint{
+				AuthURL:   "https://fluid-kolla.us.auth0.com/authorize",
+				TokenURL:  "https://fluid-kolla.us.auth0.com/oauth/token",
+				AuthStyle: oauth2.AuthStyleInParams,
+			},
+			RedirectURL: "https://infinitysearch.xyz/api/installcallback",
+			Scopes: []string{
+				"openid",
+				"offline_access",
+				"read:contacts",
+				"read:schedules",
+			},
+		},
+	},
 }
 
 // Redirects the user to either the login page or sends them to the providers
