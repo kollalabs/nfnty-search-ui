@@ -80,22 +80,6 @@ var configs = map[string]connectorConfig{
 		},
 		Audience:     "https://data.fluid.program.kolla.dev",
 		AuthProvider: providerFusebit,
-		AuthInfo: oauth2.Config{
-			ClientID:     os.Getenv("FLUID_CLIENT_ID"),
-			ClientSecret: os.Getenv("FLUID_CLIENT_SECRET"),
-			Endpoint: oauth2.Endpoint{
-				AuthURL:   "https://hydra-proxy-fluid-7dgilp22pa-uc.a.run.app/oauth2/auth",
-				TokenURL:  "https://hydra-proxy-fluid-7dgilp22pa-uc.a.run.app/oauth2/token",
-				AuthStyle: oauth2.AuthStyleInParams,
-			},
-
-			Scopes: []string{
-				"openid",
-				"offline_access",
-				"read:contacts",
-				"read:schedules",
-			},
-		},
 	},
 }
 
