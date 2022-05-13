@@ -18,6 +18,11 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// handle either oauth callback or fusebit session callback
+	if sessionID := r.URL.Query().Get("session_id"); sessionID != "" {
+		// handle fusebit session callback
+	}
+
 	ctx := r.Context()
 
 	errorResponse := r.URL.Query().Get("error")
@@ -62,7 +67,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	idToken := resp.Extra("id_token").(string)
 	scopes := strings.Split(resp.Extra("scope").(string), " ")
 
-	tok := tokenInfo{
+	tok := installInfo{
 		Token:              resp,
 		IDToken:            idToken,
 		Scopes:             scopes,
@@ -70,17 +75,16 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		InfinitySearchUser: sub,
 	}
 
-	err = saveUserAppToken(ctx, &tok)
+	err = datastoreSaveUserToken(ctx, &tok)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	http.Redirect(w, r, "/search?target="+target, http.StatusFound)
-
 }
 
-type tokenInfo struct {
+type installInfo struct {
 	*oauth2.Token
 	IDToken string
 	Scopes  []string

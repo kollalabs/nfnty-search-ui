@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"net/http"
 	"net/url"
 	"os"
@@ -28,7 +29,10 @@ type connectorInfo struct {
 	Logo           string
 	LogoSmall      string
 	MarketplaceURL string
+	SearchHandler  func(context.Context, connectorConfig, oauth2.TokenSource, string) (*SearchResults, error)
 }
+
+const redirectURL = "https://infinitysearch.xyz/api/installcallback"
 
 // TODO: move into a file that is loaded at startup
 var configs = map[string]connectorConfig{
@@ -39,7 +43,9 @@ var configs = map[string]connectorConfig{
 			Logo:           "https://www.jobnimbus.com/wp-content/uploads/2020/10/5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x.png",
 			LogoSmall:      "https://www.jobnimbus.com/wp-content/uploads/2020/10/cropped-5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x-32x32.png",
 			MarketplaceURL: "https://jobnimbus.kolla.market/",
+			SearchHandler:  jobNimbusSearch,
 		},
+
 		Audience: "https://data.job-nimbus.program.kolla.dev",
 		AuthInfo: oauth2.Config{
 			ClientID:     os.Getenv("JN_CLIENT_ID"),
@@ -49,7 +55,6 @@ var configs = map[string]connectorConfig{
 				TokenURL:  "https://k-job-nimbus.us.auth0.com/oauth/token",
 				AuthStyle: oauth2.AuthStyleInParams,
 			},
-			RedirectURL: "https://infinitysearch.xyz/api/installcallback",
 			Scopes: []string{
 				"openid",
 				"offline_access",
@@ -65,17 +70,18 @@ var configs = map[string]connectorConfig{
 			Logo:           "https://ik.imagekit.io/fluid/s3/logo.svg",
 			LogoSmall:      "https://ik.imagekit.io/fluid/s3/logo.svg",
 			MarketplaceURL: "https://fluid.kolla.market/",
+			SearchHandler:  fluidSearch,
 		},
 		Audience: "https://data.fluid.program.kolla.dev",
 		AuthInfo: oauth2.Config{
 			ClientID:     os.Getenv("FLUID_CLIENT_ID"),
 			ClientSecret: os.Getenv("FLUID_CLIENT_SECRET"),
 			Endpoint: oauth2.Endpoint{
-				AuthURL:   "https://fluid-kolla.us.auth0.com/authorize",
-				TokenURL:  "https://fluid-kolla.us.auth0.com/oauth/token",
+				AuthURL:   "https://hydra-proxy-fluid-7dgilp22pa-uc.a.run.app/oauth2/auth",
+				TokenURL:  "https://hydra-proxy-fluid-7dgilp22pa-uc.a.run.app/oauth2/token",
 				AuthStyle: oauth2.AuthStyleInParams,
 			},
-			RedirectURL: "https://infinitysearch.xyz/api/installcallback",
+
 			Scopes: []string{
 				"openid",
 				"offline_access",
@@ -124,7 +130,7 @@ func installURLNoAuthRedirect(cfg connectorConfig, sub string) (string, error) {
 	// make sure that we have a cookie with the user's ID in it so we can link the tokens together
 	a := cfg.AuthInfo
 
-	u, err := url.Parse(a.RedirectURL)
+	u, err := url.Parse(redirectURL)
 	if err != nil {
 		return "", err
 	}
@@ -132,7 +138,7 @@ func installURLNoAuthRedirect(cfg connectorConfig, sub string) (string, error) {
 	v.Set("sub", sub)
 	v.Set("target", cfg.ConnectorInfo.Name)
 	u.RawQuery = v.Encode()
-	a.RedirectURL = u.String()
+	a.RedirectURL = u.String() // set the oauth2 config redirect URL
 
 	codeOptions := []oauth2.AuthCodeOption{
 		oauth2.ApprovalForce, // force consent page to show everytime
