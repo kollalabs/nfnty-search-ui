@@ -18,7 +18,41 @@ func UserInstallFusebitHandler(w http.ResponseWriter, r *http.Request) {}
 
 func FusebitUserApps(ctx context.Context, sub string) (map[string]installInfo, error) {
 	// To get a user’s install profile on Fusebit, search for all app installs and filter by the fusebit.tenantId tag
+	u := fusebitBase + "/install?tag=fusebit.tenantId:" + sub
+
+	req, err := http.NewRequest(http.MethodPost, u, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Authorization", "Bearer "+fusebitToken)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 300 {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("status code %d, body [%s]", resp.StatusCode, body)
+	}
+
+	var installs FusebitInstallsResponse
+	err = json.NewDecoder(resp.Body).Decode(&installs)
+	if err != nil {
+		return nil, err
+	}
+
 	return nil, nil
+}
+
+type FusebitInstallsResponse struct {
+	Items struct {
+		Data FusebitInstallItems `json:"data"`
+	} `json:"items"`
+}
+
+type FusebitInstallItems struct {
+	// TODO: map out this struct
 }
 
 //FusebitStartSessionURL returns a url for the user to start the Fusebit install process
@@ -44,7 +78,7 @@ func FusebitStartSessionURL(ctx context.Context, sub string, redirectURL string)
 	req.Header.Add("Authorization", "Bearer "+fusebitToken)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	defer resp.Body.Close()
 
@@ -56,7 +90,7 @@ func FusebitStartSessionURL(ctx context.Context, sub string, redirectURL string)
 	var session FusebitSession
 	err = json.NewDecoder(resp.Body).Decode(&session)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 
 	return session.TargetURL, nil
