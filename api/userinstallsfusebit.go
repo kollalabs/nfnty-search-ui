@@ -42,17 +42,29 @@ func FusebitUserApps(ctx context.Context, sub string) (map[string]installInfo, e
 		return nil, err
 	}
 
+	if len(installs.Items) > 1 {
+		return nil, fmt.Errorf("too many installs found for tenant")
+	}
+
+	for k, v := range installs.Items[0].Data {
+		fmt.Println(k, v) // TODO map from fusebit connector instance to our connector instance
+	}
+
 	return nil, nil
 }
 
 type FusebitInstallsResponse struct {
-	Items struct {
-		Data FusebitInstallItems `json:"data"`
-	} `json:"items"`
+	Items []FusebitInstallItem `json:"items"`
 }
 
-type FusebitInstallItems struct {
-	// TODO: map out this struct
+type FusebitInstallItem struct {
+	ID       string `json:"id"`
+	ParentID string `json:"parentId"`
+	Data     map[string]FusebitConnectorInstall
+}
+
+type FusebitConnectorInstall struct {
+	EntityID string `json:"entityId"`
 }
 
 //FusebitStartSessionURL returns a url for the user to start the Fusebit install process
