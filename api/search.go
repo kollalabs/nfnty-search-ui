@@ -10,12 +10,9 @@ import (
 	"strings"
 
 	"github.com/kollalabs/nfnty-search-ui/api/jobnimbusclient"
+	"golang.org/x/oauth2"
 	"google.golang.org/protobuf/encoding/protojson"
 )
-
-var handlers = map[string]func(context.Context, tokenInfo, string) (*SearchResults, error){
-	"connectors/job-nimbus": jobNimbusSearch,
-}
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
@@ -53,18 +50,24 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := make(SearchResponse)
-	for _, appToken := range apps {
-		f, ok := handlers[appToken.ConnectorName]
+	for _, install := range apps {
+		var err error
+		cfg, ok := configs[install.ConnectorName]
 		if !ok {
 			continue
 		}
-		var err error
-		response[appToken.ConnectorName], err = f(ctx, appToken, filter)
+		f := cfg.ConnectorInfo.SearchHandler
+
+		ts, err := install.TokenSource(ctx)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("unable to perform request to [%s] [%s]", appToken.ConnectorName, err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("unable to to get token source [%s] [%s]", install.ConnectorName, err), http.StatusInternalServerError)
 			return
 		}
-
+		response[install.ConnectorName], err = f(ctx, cfg, ts, filter)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("unable to perform request to [%s] [%s]", install.ConnectorName, err), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -94,7 +97,7 @@ type ConnectorResult struct {
 
 const jobNimbusMediatorURL = "https://c-job-nimbus-7dgilp22pa-uc.a.run.app"
 
-func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchResults, error) {
+func jobNimbusSearch(ctx context.Context, cfg connectorConfig, ts oauth2.TokenSource, filter string) (*SearchResults, error) {
 	v := url.Values{
 		"filter":    []string{filter},
 		"page_size": []string{"5"},
@@ -102,31 +105,14 @@ func jobNimbusSearch(ctx context.Context, t tokenInfo, filter string) (*SearchRe
 
 	// TODO: this whole refresh token blob needs to be extracted into a more
 	// general place
-	cfg, ok := configs[t.ConnectorName]
-	if !ok {
-		return nil, fmt.Errorf("unable to find config for [%s]", t.ConnectorName)
-	}
-	tokenSource := cfg.AuthInfo.TokenSource(ctx, t.Token)
-
-	token, err := tokenSource.Token()
-	if err != nil {
-		return nil, err
-	}
-	// check if access token or refresh token have been rotated
-	// (not all refresh tokens are rotated)
-	if token.RefreshToken != t.RefreshToken || token.AccessToken != t.AccessToken {
-		t.AccessToken = token.AccessToken
-		t.RefreshToken = token.RefreshToken
-		t.Expiry = token.Expiry
-
-		err := saveUserAppToken(ctx, &t)
-		if err != nil {
-			return nil, err
-		}
-	}
+	// TODO: we should only have access to a static token source here
 
 	u := jobNimbusMediatorURL + "/v1/contacts?" + v.Encode()
 	req, err := http.NewRequest(http.MethodGet, u, nil)
+	if err != nil {
+		return nil, err
+	}
+	t, err := ts.Token()
 	if err != nil {
 		return nil, err
 	}
@@ -185,6 +171,17 @@ func convertJobNimbusContact(c *jobnimbusclient.Contact) ConnectorResult {
 		Link:        "https://app.jobnimbus.com/contact/" + c.Jnid,
 		Kvdata:      data,
 	}
+}
+
+func fluidSearch(ctx context.Context, cfg connectorConfig, t oauth2.TokenSource, filter string) (*SearchResults, error) {
+	/*
+		t, err := accessToken(ctx, t.ConnectorName, tenantID)
+		if err != nil {
+			return nil, err
+		}
+	*/
+	// for now return an empty search results struct
+	return &SearchResults{}, nil
 }
 
 func addIfSet(data map[string]string, label string, value string) {

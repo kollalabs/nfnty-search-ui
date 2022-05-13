@@ -5,106 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"os"
 	"strings"
-
-	"cloud.google.com/go/datastore"
-	"go.einride.tech/aip/resourceid"
-	"google.golang.org/api/option"
 )
 
 const (
 	userInfoURL = "https://infinitysearch.us.auth0.com/userinfo"
-
-	datastoreTokenKind = "OAuthToken"
-	datastoreProjectID = "infinity-search-339422"
 )
 
-var defaultDataStore struct {
-	client *datastore.Client
-}
-
-func init() {
-
-	ctx := context.Background()
-	client, err := datastoreClient(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defaultDataStore.client = client
-}
-
-func datastoreClient(ctx context.Context) (*datastore.Client, error) {
-	if defaultDataStore.client != nil {
-		return defaultDataStore.client, nil
-	}
-
-	credsJSON := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
-
-	options := []option.ClientOption{}
-	if credsJSON != "" {
-		options = append(options, option.WithCredentialsJSON([]byte(credsJSON)))
-	}
-
-	// Create a datastore client. In a typical application, you would create
-	// a single client which is reused for every datastore operation.
-	dsClient, err := datastore.NewClient(ctx, datastoreProjectID, options...)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return dsClient, nil
-}
-
-func userApps(ctx context.Context, sub string) (map[string]tokenInfo, error) {
-
-	dsClient, err := datastoreClient(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get client: %w", err)
-	}
-
-	query := datastore.NewQuery(datastoreTokenKind).Filter("InfinitySearchUser =", sub).Order("-Expiry")
-
-	var results []tokenInfo
-	_, err = dsClient.GetAll(ctx, query, &results)
-	if err != nil {
-		return nil, err
-	}
-
-	// grab the first token we see for each connector
-	agg := make(map[string]tokenInfo)
-	for _, v := range results {
-		_, ok := agg[v.ConnectorName]
-		if ok {
-			continue
-		}
-		agg[v.ConnectorName] = v
-	}
-
-	return agg, nil
-}
-
-func saveUserAppToken(ctx context.Context, t *tokenInfo) error {
-
-	key := resourceid.NewSystemGeneratedBase32()
-
-	// kind, name, parent
-	k := datastore.NameKey(datastoreTokenKind, key, nil)
-
-	if _, err := defaultDataStore.client.Put(ctx, k, t); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// placeholder to make vercel happy
-func UserHandler(w http.ResponseWriter, r *http.Request) {
-
-}
+// placeholder handler for Vercal
+func UserHandler(w http.ResponseWriter, r *http.Request) {}
 
 // isAuthed returns the subject (userID) if the user is authed
 func isAuthed(ctx context.Context, r *http.Request) (string, error) {
