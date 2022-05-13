@@ -13,6 +13,9 @@ import (
 var fusebitBase = `https://api.us-west-1.on.fusebit.io/v2/account/acc-3a72dea47d034728/subscription/sub-1d5ca7558f244bce/integration/nfnty-search`
 var fusebitToken = ``
 
+// placeholder handler for Vercal
+func UserInstallFusebitHandler(w http.ResponseWriter, r *http.Request) {}
+
 //FusebitStartSessionURL returns a url for the user to start the Fusebit install process
 func FusebitStartSessionURL(ctx context.Context, sub string, redirectURL string) (string, error) {
 	u := fusebitBase + "/session"
