@@ -20,6 +20,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
+	// catch any generic errors the auth provider has returned
 	errorResponse := r.URL.Query().Get("error")
 	if errorResponse != "" {
 		msg := errorResponse + " " + r.URL.Query().Get("error_description")
@@ -27,12 +28,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authorizationCode := r.URL.Query().Get("code")
-	if authorizationCode == "" {
-		http.Error(w, "code is required", http.StatusBadRequest)
-		return
-	}
-
+	// target is the connector the callback is intended for
 	target := r.URL.Query().Get("target")
 	if target == "" {
 		http.Error(w, "target is required", http.StatusBadRequest)
@@ -45,6 +41,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO: remove this
 	sub := r.URL.Query().Get("sub")
 	if sub == "" {
 		http.Error(w, "sub is required", http.StatusBadRequest)
@@ -63,6 +60,11 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	case providerOAuth:
+		authorizationCode := r.URL.Query().Get("code")
+		if authorizationCode == "" {
+			http.Error(w, "code is required", http.StatusBadRequest)
+			return
+		}
 
 		c := cfg.AuthInfo
 		c.RedirectURL = reconstructRedirectURI(r)

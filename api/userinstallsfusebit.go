@@ -16,6 +16,11 @@ var fusebitToken = ``
 // placeholder handler for Vercal
 func UserInstallFusebitHandler(w http.ResponseWriter, r *http.Request) {}
 
+func FusebitUserApps(ctx context.Context, sub string) (map[string]installInfo, error) {
+	// To get a user’s install profile on Fusebit, search for all app installs and filter by the fusebit.tenantId tag
+	return nil, nil
+}
+
 //FusebitStartSessionURL returns a url for the user to start the Fusebit install process
 func FusebitStartSessionURL(ctx context.Context, sub string, redirectURL string) (string, error) {
 	u := fusebitBase + "/session"

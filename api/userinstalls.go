@@ -59,7 +59,7 @@ func userApps(ctx context.Context, sub string) (map[string]installInfo, error) {
 	})
 	wg.Go(func() error {
 		var err error
-		grpB, err = fusebitUserApps(ctx, sub)
+		grpB, err = FusebitUserApps(ctx, sub)
 		if err != nil {
 			return err
 		}
@@ -78,10 +78,6 @@ func userApps(ctx context.Context, sub string) (map[string]installInfo, error) {
 	}
 	return grpA, nil
 
-}
-
-func fusebitUserApps(ctx context.Context, sub string) (map[string]installInfo, error) {
-	return nil, nil
 }
 
 func datastoreClient(ctx context.Context) (*datastore.Client, error) {
