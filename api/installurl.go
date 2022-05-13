@@ -12,8 +12,14 @@ import (
 type connectorConfig struct {
 	ConnectorInfo connectorInfo
 	Audience      string
+	AuthProvider  string
 	AuthInfo      oauth2.Config
 }
+
+const (
+	providerFusebit = "fusebit"
+	providerOAuth   = "oauth2"
+)
 
 func (c *connectorConfig) SearchMetadata() ConnectorMeta {
 	return ConnectorMeta{
@@ -45,8 +51,8 @@ var configs = map[string]connectorConfig{
 			MarketplaceURL: "https://jobnimbus.kolla.market/",
 			SearchHandler:  jobNimbusSearch,
 		},
-
-		Audience: "https://data.job-nimbus.program.kolla.dev",
+		AuthProvider: providerOAuth,
+		Audience:     "https://data.job-nimbus.program.kolla.dev",
 		AuthInfo: oauth2.Config{
 			ClientID:     os.Getenv("JN_CLIENT_ID"),
 			ClientSecret: os.Getenv("JN_CLIENT_SECRET"),
@@ -72,7 +78,8 @@ var configs = map[string]connectorConfig{
 			MarketplaceURL: "https://fluid.kolla.market/",
 			SearchHandler:  fluidSearch,
 		},
-		Audience: "https://data.fluid.program.kolla.dev",
+		Audience:     "https://data.fluid.program.kolla.dev",
+		AuthProvider: providerFusebit,
 		AuthInfo: oauth2.Config{
 			ClientID:     os.Getenv("FLUID_CLIENT_ID"),
 			ClientSecret: os.Getenv("FLUID_CLIENT_SECRET"),
@@ -92,7 +99,7 @@ var configs = map[string]connectorConfig{
 	},
 }
 
-// Redirects the user to either the login page or sends them to the providers
+// Redirects the user to either the login page or sends them to the provider's
 // oauth authorization page
 func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
@@ -116,6 +123,7 @@ func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func installURLWithAuthRedirect(r *http.Request, cfg connectorConfig) (string, error) {
+	ctx := r.Context()
 
 	sub, err := r.Cookie("sub")
 	if err != nil || sub.Value == "" {
@@ -123,13 +131,11 @@ func installURLWithAuthRedirect(r *http.Request, cfg connectorConfig) (string, e
 		v.Set("redirect_uri", r.URL.String())
 		return "/login?" + v.Encode(), nil
 	}
-	return installURLNoAuthRedirect(cfg, sub.Value)
+	return installURLNoAuthRedirect(ctx, cfg, sub.Value)
 }
 
-func installURLNoAuthRedirect(cfg connectorConfig, sub string) (string, error) {
-	// make sure that we have a cookie with the user's ID in it so we can link the tokens together
-	a := cfg.AuthInfo
-
+func installURLNoAuthRedirect(ctx context.Context, cfg connectorConfig, sub string) (string, error) {
+	// generate the URL to redirect to after the user have completed the oauth flow
 	u, err := url.Parse(redirectURL)
 	if err != nil {
 		return "", err
@@ -137,13 +143,27 @@ func installURLNoAuthRedirect(cfg connectorConfig, sub string) (string, error) {
 	v := u.Query()
 	v.Set("sub", sub)
 	v.Set("target", cfg.ConnectorInfo.Name)
+	v.Set("auth_provider", cfg.AuthProvider)
 	u.RawQuery = v.Encode()
-	a.RedirectURL = u.String() // set the oauth2 config redirect URL
+	redirectURL := u.String()
 
-	codeOptions := []oauth2.AuthCodeOption{
-		oauth2.ApprovalForce, // force consent page to show everytime
-		oauth2.SetAuthURLParam("audience", cfg.Audience),
+	var installURL string
+	if cfg.AuthProvider == providerFusebit {
+		installURL, err = FusebitStartSessionURL(ctx, redirectURL, sub)
+		if err != nil {
+			return "", nil
+		}
+	} else {
+		// make sure we're working on a copy of the auth config, otherwise we risk modifying the original
+		var a oauth2.Config = cfg.AuthInfo
+		// assume we're handling the OAuth flow
+		a.RedirectURL = redirectURL // set the oauth2 config redirect URL
+
+		codeOptions := []oauth2.AuthCodeOption{
+			oauth2.ApprovalForce, // force consent page to show everytime
+			oauth2.SetAuthURLParam("audience", cfg.Audience),
+		}
+		installURL = a.AuthCodeURL("", codeOptions...)
 	}
-	codeURL := a.AuthCodeURL("", codeOptions...)
-	return codeURL, nil
+	return installURL, nil
 }

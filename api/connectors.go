@@ -48,7 +48,7 @@ func ConnectorsHandler(w http.ResponseWriter, r *http.Request) {
 		for i, v := range list {
 			cfg := configs[v.Name]
 			v.MarketplaceURL = cfg.ConnectorInfo.MarketplaceURL
-			v.InstallURL, err = installURLNoAuthRedirect(cfg, sub)
+			v.InstallURL, err = installURLNoAuthRedirect(ctx, cfg, sub)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
