@@ -50,7 +50,7 @@ func ConnectorsHandler(w http.ResponseWriter, r *http.Request) {
 			v.MarketplaceURL = cfg.ConnectorInfo.MarketplaceURL
 			// link that the user can click on to initiate the target connection
 			// oauth login flow
-			v.InstallURL, err = installURLForTarget(ctx, cfg, sub)
+			v.InstallURL, err = oauthConnectURL(ctx, cfg, sub)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
