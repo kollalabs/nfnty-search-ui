@@ -84,7 +84,9 @@ var configs = map[string]connectorConfig{
 }
 
 // Redirects the user to either the login page or sends them to the provider's
-// oauth authorization page
+// oauth authorization page.
+// Users may have been redirected to this handler from the target connector's
+// marketplace page.
 func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
 		return
@@ -96,7 +98,7 @@ func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dest, err := installURLWithAuthRedirect(r, cfg)
+	dest, err := oauthConnectURLWithAuthRedirect(r, cfg)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -106,7 +108,10 @@ func InstallURLHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func installURLWithAuthRedirect(r *http.Request, cfg connectorConfig) (string, error) {
+// oauthConnectURLWithAuthRedirect returns the URL used to connect the user to the requested
+// connection target. If the user is not logged in, the user is redirected to the
+// infinity-search login page.
+func oauthConnectURLWithAuthRedirect(r *http.Request, cfg connectorConfig) (string, error) {
 	ctx := r.Context()
 
 	sub, err := r.Cookie("sub")
@@ -115,10 +120,12 @@ func installURLWithAuthRedirect(r *http.Request, cfg connectorConfig) (string, e
 		v.Set("redirect_uri", r.URL.String())
 		return "/login?" + v.Encode(), nil
 	}
-	return installURLNoAuthRedirect(ctx, cfg, sub.Value)
+	return oauthConnectURL(ctx, cfg, sub.Value)
 }
 
-func installURLNoAuthRedirect(ctx context.Context, cfg connectorConfig, sub string) (string, error) {
+// oauthConnectURL generates the necessary oauth authorization URL used to initiate the oauth login
+// and consent flow.
+func oauthConnectURL(ctx context.Context, cfg connectorConfig, sub string) (string, error) {
 	// generate the URL to redirect to after the user have completed the oauth flow
 	u, err := url.Parse(redirectURL)
 	if err != nil {
@@ -150,4 +157,19 @@ func installURLNoAuthRedirect(ctx context.Context, cfg connectorConfig, sub stri
 		installURL = a.AuthCodeURL("", codeOptions...)
 	}
 	return installURL, nil
+}
+
+// installURLForTarget is the infinity-search connector install url that will lead the user
+// into the oauth login and consent flow. It can be used by either infinity-search or external
+// marketplaces to initiate the connection.
+func installURLForTarget(ctx context.Context, cfg connectorConfig, sub string) (string, error) {
+	u := url.URL{
+		Path: "/api/installurl",
+	}
+	v := url.Values{}
+	v.Set("target", cfg.ConnectorInfo.Name)
+	v.Set("sub", sub)
+	u.RawQuery = v.Encode()
+
+	return u.String(), nil
 }
