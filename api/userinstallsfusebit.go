@@ -36,21 +36,26 @@ func FusebitUserApps(ctx context.Context, sub string) (map[string]installInfo, e
 		return nil, fmt.Errorf("status code %d, body [%s]", resp.StatusCode, body)
 	}
 
-	var installs FusebitInstallsResponse
-	err = json.NewDecoder(resp.Body).Decode(&installs)
+	var fusebitInstalls FusebitInstallsResponse
+	err = json.NewDecoder(resp.Body).Decode(&fusebitInstalls)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(installs.Items) > 1 {
+	if len(fusebitInstalls.Items) > 1 {
 		return nil, fmt.Errorf("too many installs found for tenant")
 	}
 
-	for k, v := range installs.Items[0].Data {
-		fmt.Println(k, v) // TODO map from fusebit connector instance to our connector instance
+	installs := make(map[string]installInfo)
+	for k := range fusebitInstalls.Items[0].Data {
+		installs[k] = installInfo{
+			Scopes:             nil, // TODO: need to separately from Fusebit to get this?
+			ConnectorName:      k,
+			InfinitySearchUser: sub,
+		}
 	}
 
-	return nil, nil
+	return installs, nil
 }
 
 type FusebitInstallsResponse struct {
