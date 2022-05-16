@@ -7,7 +7,7 @@ FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:0-${VARIANT}
 # install Go
 RUN ARCH=$(uname -m); \
   if [ $ARCH = 'aarch64' ]; then ARCH='arm64'; fi; \
-  curl -curl -L "https://go.dev/dl/go1.16.13.linux-${ARCH}.tar.gz" -o /tmp/go.tar.gz; \
+  curl -curl -L "https://go.dev/dl/go1.18.2.linux-${ARCH}.tar.gz" -o /tmp/go.tar.gz; \
   tar -C /usr/local -xzf /tmp/go.tar.gz; \
   echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile; \
   echo 'export PATH=$PATH:/home/node/go/bin' >> /home/node/.bashrc; \

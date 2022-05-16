@@ -1,6 +1,6 @@
 module github.com/kollalabs/nfnty-search-ui
 
-go 1.16
+go 1.18
 
 require (
 	cloud.google.com/go/datastore v1.6.0
