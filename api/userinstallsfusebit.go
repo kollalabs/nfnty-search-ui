@@ -3,24 +3,32 @@ package api
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
+	"os"
 )
 
 var fusebitBase = `https://api.us-west-1.on.fusebit.io/v2/account/acc-3a72dea47d034728/subscription/sub-1d5ca7558f244bce/integration/nfnty-search`
-var fusebitToken = ``
+var fusebitToken = os.Getenv("FUSEBIT_TOKEN")
 
-// placeholder handler for Vercal
+// placeholder handler for Vercel
 func UserInstallFusebitHandler(w http.ResponseWriter, r *http.Request) {}
 
 func FusebitUserApps(ctx context.Context, sub string) (map[string]installInfo, error) {
 	// To get a user’s install profile on Fusebit, search for all app installs and filter by the fusebit.tenantId tag
-	u := fusebitBase + "/install?tag=fusebit.tenantId:" + sub
+	tenantID := toFusebitTenantID(sub)
 
-	req, err := http.NewRequest(http.MethodPost, u, nil)
+	u := fusebitBase + "/install"
+	v := url.Values{}
+	v.Add("tag", "fusebit.tenantId="+tenantID)
+	u += "?" + v.Encode()
+
+	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -32,6 +40,8 @@ func FusebitUserApps(ctx context.Context, sub string) (map[string]installInfo, e
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 300 {
+		out, _ := httputil.DumpRequest(req, true)
+		fmt.Println(string(out))
 		body, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("status code %d, body [%s]", resp.StatusCode, body)
 	}
@@ -146,9 +156,38 @@ type FusebitSession struct {
 	TargetURL string `json:"target_url"`
 }
 
-/*
-curl 'https://api.us-west-1.on.fusebit.io/v2/account/acc-3a72dea47d034728/subscription/sub-1d5ca7558f244bce/integration/nfnty-search/session' \
-  -H 'Content-Type: application/json' \
-  -H "Authorization: Bearer `fuse token -o raw`" -v \
-  -d '{ "redirectUrl": "http://localhost:8000/something/callback", "tags": { "fusebit.tenantId": "some tenant id" } }'
-*/
+func FusebitAccessToken(ctx context.Context, connector string, tenantID string) (string, error) {
+	tenantID = toFusebitTenantID(tenantID)
+	u := fusebitBase + "/api/connector/" + connector + "/tenant/" + url.PathEscape(tenantID)
+
+	req, err := http.NewRequest(http.MethodPost, u, nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Add("Authorization", "Bearer "+fusebitToken)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", nil
+	}
+	defer resp.Body.Close()
+
+	type FusebitAccessTokenResponse struct {
+		Authorization string `json:"authorization"`
+	}
+
+	data := FusebitAccessTokenResponse{}
+	err = json.NewDecoder(resp.Body).Decode(&data)
+	if err != nil {
+		return "", nil
+	}
+
+	return data.Authorization, nil
+}
+
+// to fusebit tenant ID converts a generic id into a fusebit compatible tenant id
+// that conforms to the regex [a-zA-Z0-9_\-\.%\/]*
+func toFusebitTenantID(tenantID string) string {
+	// base64 encode the tenant ID
+	encodedTenantID := base64.StdEncoding.EncodeToString([]byte(tenantID))
+	return encodedTenantID
+}
