@@ -141,9 +141,9 @@ func oauthConnectURL(ctx context.Context, cfg connectorConfig, sub string) (stri
 
 	var installURL string
 	if cfg.AuthProvider == providerFusebit {
-		installURL, err = FusebitStartSessionURL(ctx, redirectURL, sub)
+		installURL, err = FusebitStartSessionURL(ctx, cfg.ConnectorInfo.Name, sub, redirectURL)
 		if err != nil {
-			return "", nil
+			return "", err
 		}
 	} else {
 		// make sure we're working on a copy of the auth config, otherwise we risk modifying the original

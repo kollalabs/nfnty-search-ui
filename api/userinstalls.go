@@ -53,7 +53,7 @@ func userApps(ctx context.Context, sub string) (map[string]installInfo, error) {
 		var err error
 		grpA, err = datastoreUserApps(ctx, sub)
 		if err != nil {
-			return fmt.Errorf("user apps group a %w", err)
+			return fmt.Errorf("unable to load apps from group a %w", err)
 		}
 		return nil
 	})
@@ -61,7 +61,7 @@ func userApps(ctx context.Context, sub string) (map[string]installInfo, error) {
 		var err error
 		grpB, err = FusebitUserApps(ctx, sub)
 		if err != nil {
-			return fmt.Errorf("user apps group b %w", err)
+			return fmt.Errorf("unable to load apps from group b %w", err)
 		}
 		return nil
 	})

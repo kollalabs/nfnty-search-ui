@@ -8,5 +8,7 @@ go build --tags local
 
 source credentials
 
+# export HTTPS_PROXY=https://127.0.0.1:8080
+
 # go server requires the gcloud CLI to be logged in with `gcloud auth application-default login`
 ./goserver
