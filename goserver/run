@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -eux
 
 pushd "$(dirname ${0})"
@@ -11,3 +12,7 @@ source credentials
 
 # go server requires the gcloud CLI to be logged in with `gcloud auth application-default login`
 ./goserver
+
+
+# Error: The Environment Variables provided for your Serverless Functions exceed the limit of 4KB. Reduce their size to continue. Learn More: https://vercel.link/env-vars-limit
+
