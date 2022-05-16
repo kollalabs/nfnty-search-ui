@@ -111,6 +111,9 @@ func reconstructRedirectURI(r *http.Request) string {
 	scheme := r.URL.Scheme
 	if scheme == "" {
 		scheme = os.Getenv("JN_REDIRECT_URI_SCHEME")
+		if scheme == "" {
+			scheme = "https"
+		}
 	}
 
 	u := url.URL{

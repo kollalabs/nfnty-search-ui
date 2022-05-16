@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 )
@@ -40,8 +39,6 @@ func FusebitUserApps(ctx context.Context, sub string) (map[string]installInfo, e
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 300 {
-		out, _ := httputil.DumpRequest(req, true)
-		fmt.Println(string(out))
 		body, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("status code %d, body [%s]", resp.StatusCode, body)
 	}
@@ -57,6 +54,10 @@ func FusebitUserApps(ctx context.Context, sub string) (map[string]installInfo, e
 	}
 
 	installs := make(map[string]installInfo)
+	if len(fusebitInstalls.Items) == 0 {
+		return installs, nil
+	}
+
 	for k := range fusebitInstalls.Items[0].Data {
 		installs[k] = installInfo{
 			Scopes:             nil, // TODO: need to separately from Fusebit to get this?
@@ -83,15 +84,17 @@ type FusebitConnectorInstall struct {
 }
 
 //FusebitStartSessionURL returns a url for the user to start the Fusebit install process
-func FusebitStartSessionURL(ctx context.Context, sub string, redirectURL string) (string, error) {
+func FusebitStartSessionURL(ctx context.Context, connector string, sub string, redirectURL string) (string, error) {
 	u := fusebitBase + "/session"
 
 	sessionRequest := FusebitSessionRequest{
 		RedirectURL: redirectURL,
 		Tags: map[string]string{
-			"fusebit.tenantId": sub,
+			"fusebit.tenantId": toFusebitTenantID(sub),
 		},
+		Components: []string{connector},
 	}
+
 	body := bytes.NewBuffer(nil)
 	err := json.NewEncoder(body).Encode(sessionRequest)
 	if err != nil {
@@ -103,6 +106,8 @@ func FusebitStartSessionURL(ctx context.Context, sub string, redirectURL string)
 		return "", err
 	}
 	req.Header.Add("Authorization", "Bearer "+fusebitToken)
+	req.Header.Add("Content-Type", "application/json")
+
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", err
@@ -114,7 +119,7 @@ func FusebitStartSessionURL(ctx context.Context, sub string, redirectURL string)
 		return "", fmt.Errorf("status code %d, body [%s]", resp.StatusCode, body)
 	}
 
-	var session FusebitSession
+	var session FusebitSessionResponse
 	err = json.NewDecoder(resp.Body).Decode(&session)
 	if err != nil {
 		return "", err
@@ -131,6 +136,7 @@ func FusebitStartSessionCommit(ctx context.Context, sessionID string) error {
 		return err
 	}
 	req.Header.Add("Authorization", "Bearer "+fusebitToken)
+
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil
@@ -150,17 +156,18 @@ func FusebitStartSessionCommit(ctx context.Context, sessionID string) error {
 type FusebitSessionRequest struct {
 	RedirectURL string            `json:"redirectUrl"`
 	Tags        map[string]string `json:"tags"`
+	Components  []string          `json:"-"`
 }
 
-type FusebitSession struct {
-	TargetURL string `json:"target_url"`
+type FusebitSessionResponse struct {
+	TargetURL string `json:"targetUrl"`
 }
 
 func FusebitAccessToken(ctx context.Context, connector string, tenantID string) (string, error) {
 	tenantID = toFusebitTenantID(tenantID)
 	u := fusebitBase + "/api/connector/" + connector + "/tenant/" + url.PathEscape(tenantID)
 
-	req, err := http.NewRequest(http.MethodPost, u, nil)
+	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
 		return "", err
 	}
