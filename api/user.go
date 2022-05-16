@@ -13,7 +13,7 @@ const (
 	userInfoURL = "https://infinitysearch.us.auth0.com/userinfo"
 )
 
-// placeholder handler for Vercal
+// placeholder handler for Vercel
 func UserHandler(w http.ResponseWriter, r *http.Request) {}
 
 // isAuthed returns the subject (userID) if the user is authed

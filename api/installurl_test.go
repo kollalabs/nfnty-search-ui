@@ -13,7 +13,7 @@ func TestInstallURL(t *testing.T) {
 	cfg := configs["connectors/job-nimbus"]
 	cfg.AuthInfo.ClientID = "abc123"
 
-	dst, err := installURLWithAuthRedirect(r, cfg)
+	dst, err := oauthConnectURLWithAuthRedirect(r, cfg)
 	if err != nil {
 		t.Fatalf("unexpected error: %s\n", err)
 	}

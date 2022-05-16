@@ -18,26 +18,17 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// handle either oauth callback or fusebit session callback
-	if sessionID := r.URL.Query().Get("session_id"); sessionID != "" {
-		// handle fusebit session callback
-	}
-
 	ctx := r.Context()
 
+	// catch any generic errors the auth provider has returned
 	errorResponse := r.URL.Query().Get("error")
 	if errorResponse != "" {
 		msg := errorResponse + " " + r.URL.Query().Get("error_description")
-		http.Error(w, msg, http.StatusOK)
+		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
 
-	authorizationCode := r.URL.Query().Get("code")
-	if authorizationCode == "" {
-		http.Error(w, "code is required", http.StatusBadRequest)
-		return
-	}
-
+	// target is the connector the callback is intended for
 	target := r.URL.Query().Get("target")
 	if target == "" {
 		http.Error(w, "target is required", http.StatusBadRequest)
@@ -50,34 +41,57 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO: remove this
 	sub := r.URL.Query().Get("sub")
 	if sub == "" {
 		http.Error(w, "sub is required", http.StatusBadRequest)
 		return
 	}
 
-	c := cfg.AuthInfo
-	c.RedirectURL = reconstructRedirectURI(r)
-	resp, err := c.Exchange(ctx, authorizationCode)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	switch cfg.AuthProvider {
+	case providerFusebit:
+		// handle either oauth callback or fusebit session callback
+		if sessionID := r.URL.Query().Get("session_id"); sessionID != "" {
+			// handle fusebit session callback
+			err := FusebitStartSessionCommit(ctx, sessionID)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+	case providerOAuth:
+		authorizationCode := r.URL.Query().Get("code")
+		if authorizationCode == "" {
+			http.Error(w, "code is required", http.StatusBadRequest)
+			return
+		}
 
-	idToken := resp.Extra("id_token").(string)
-	scopes := strings.Split(resp.Extra("scope").(string), " ")
+		c := cfg.AuthInfo
+		c.RedirectURL = reconstructRedirectURI(r)
+		resp, err := c.Exchange(ctx, authorizationCode)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-	tok := installInfo{
-		Token:              resp,
-		IDToken:            idToken,
-		Scopes:             scopes,
-		ConnectorName:      target,
-		InfinitySearchUser: sub,
-	}
+		idToken := resp.Extra("id_token").(string)
+		scopes := strings.Split(resp.Extra("scope").(string), " ")
 
-	err = datastoreSaveUserToken(ctx, &tok)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		tok := installInfo{
+			Token:              resp,
+			IDToken:            idToken,
+			Scopes:             scopes,
+			ConnectorName:      target,
+			InfinitySearchUser: sub,
+		}
+
+		err = datastoreSaveUserToken(ctx, &tok)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	default:
+		http.Error(w, "unknown auth provider "+cfg.AuthProvider, http.StatusInternalServerError)
 		return
 	}
 

@@ -18,7 +18,7 @@ import (
 // the first is to self-manage the user tokans and signup process
 // the second is to use Fusebit to manage the user tokens and signup process
 
-// placeholder handler for Vercal
+// placeholder handler for Vercel
 func UserInstallHandler(w http.ResponseWriter, r *http.Request) {}
 
 const (
@@ -53,15 +53,15 @@ func userApps(ctx context.Context, sub string) (map[string]installInfo, error) {
 		var err error
 		grpA, err = datastoreUserApps(ctx, sub)
 		if err != nil {
-			return err
+			return fmt.Errorf("user apps group a %w", err)
 		}
 		return nil
 	})
 	wg.Go(func() error {
 		var err error
-		grpB, err = fusebitUserApps(ctx, sub)
+		grpB, err = FusebitUserApps(ctx, sub)
 		if err != nil {
-			return err
+			return fmt.Errorf("user apps group b %w", err)
 		}
 		return nil
 	})
@@ -78,10 +78,6 @@ func userApps(ctx context.Context, sub string) (map[string]installInfo, error) {
 	}
 	return grpA, nil
 
-}
-
-func fusebitUserApps(ctx context.Context, sub string) (map[string]installInfo, error) {
-	return nil, nil
 }
 
 func datastoreClient(ctx context.Context) (*datastore.Client, error) {
