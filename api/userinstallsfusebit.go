@@ -188,6 +188,6 @@ func FusebitAccessToken(ctx context.Context, connector string, tenantID string) 
 // that conforms to the regex [a-zA-Z0-9_\-\.%\/]*
 func toFusebitTenantID(tenantID string) string {
 	// base64 encode the tenant ID
-	encodedTenantID := base64.StdEncoding.EncodeToString([]byte(tenantID))
+	encodedTenantID := base64.RawStdEncoding.EncodeToString([]byte(tenantID))
 	return encodedTenantID
 }
