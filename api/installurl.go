@@ -46,8 +46,8 @@ var configs = map[string]connectorConfig{
 		ConnectorInfo: connectorInfo{
 			Name:           "connectors/job-nimbus",
 			DisplayName:    "Job Nimbus",
-			Logo:           "https://www.jobnimbus.com/wp-content/uploads/2020/10/5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x.png",
-			LogoSmall:      "https://www.jobnimbus.com/wp-content/uploads/2020/10/cropped-5.-JN_Logo_Social_Submark_Condensed-Blue-Copy-3@1x-32x32.png",
+			Logo:           "https://media-exp1.licdn.com/dms/image/C560BAQEMDuGUh1wAoA/company-logo_200_200/0/1601329489976?e=1660780800&v=beta&t=1x9Qg-bs1r4UYEt4x1nolX6hVh9XLJU_0LWAY15uiPw",
+			LogoSmall:      "https://media-exp1.licdn.com/dms/image/C560BAQEMDuGUh1wAoA/company-logo_200_200/0/1601329489976?e=1660780800&v=beta&t=1x9Qg-bs1r4UYEt4x1nolX6hVh9XLJU_0LWAY15uiPw",
 			MarketplaceURL: "https://jobnimbus.kolla.market/",
 			SearchHandler:  jobNimbusSearch,
 		},
