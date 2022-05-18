@@ -51,13 +51,16 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	switch cfg.AuthProvider {
 	case providerFusebit:
 		// handle either oauth callback or fusebit session callback
-		if sessionID := r.URL.Query().Get("session_id"); sessionID != "" {
-			// handle fusebit session callback
-			err := FusebitStartSessionCommit(ctx, sessionID)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+		sessionID := r.URL.Query().Get("session")
+		if sessionID == "" {
+			http.Error(w, "session is required", http.StatusBadRequest)
+			return
+		}
+		// handle fusebit session callback
+		err := FusebitStartSessionCommit(ctx, sessionID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 	case providerOAuth:
 		authorizationCode := r.URL.Query().Get("code")
