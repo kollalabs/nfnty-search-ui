@@ -174,6 +174,7 @@ func FusebitAccessToken(ctx context.Context, connector string, tenantID string) 
 	}
 	tenant := "tenants/" + url.PathEscape(toFusebitTenantID(tenantID))
 
+	// when url.JoinPath is available, use that instead
 	u := fusebitBase + path.Join("/api/", connector, tenant)
 
 	req, err := http.NewRequest(http.MethodGet, u, nil)
