@@ -97,7 +97,7 @@ func FusebitStartSessionURL(ctx context.Context, connector string, sub string, r
 		},
 		Components: []string{
 			connector,
-			strings.ReplaceAll(connector, "connectors/", "connector-")}, // TODO: remove once the Fusebit integration has the updated component names
+		},
 	}
 
 	body := bytes.NewBuffer(nil)
