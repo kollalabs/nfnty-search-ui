@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"strings"
@@ -61,7 +60,6 @@ func FusebitUserApps(ctx context.Context, sub string) (map[string]installInfo, e
 		return installs, nil
 	}
 
-	fmt.Println(fusebitInstalls)
 	for k := range fusebitInstalls.Items[0].Data {
 		installs[k] = installInfo{
 			Scopes:             nil, // TODO: need to separately from Fusebit to get this?
@@ -69,8 +67,6 @@ func FusebitUserApps(ctx context.Context, sub string) (map[string]installInfo, e
 			InfinitySearchUser: sub,
 		}
 	}
-
-	fmt.Println(installs)
 
 	return installs, nil
 }
@@ -101,8 +97,6 @@ func FusebitStartSessionURL(ctx context.Context, connector string, sub string, r
 		Components: []string{connector, strings.ReplaceAll(connector, "connectors/", "connector-")},
 	}
 
-	fmt.Println("setting component to", sessionRequest.Components)
-
 	body := bytes.NewBuffer(nil)
 	err := json.NewEncoder(body).Encode(sessionRequest)
 	if err != nil {
@@ -126,9 +120,6 @@ func FusebitStartSessionURL(ctx context.Context, connector string, sub string, r
 		body, _ := io.ReadAll(resp.Body)
 		return "", fmt.Errorf("status code %d, body [%s]", resp.StatusCode, body)
 	}
-
-	out, _ := httputil.DumpResponse(resp, true)
-	fmt.Println(string(out))
 
 	var session FusebitSessionResponse
 	err = json.NewDecoder(resp.Body).Decode(&session)
