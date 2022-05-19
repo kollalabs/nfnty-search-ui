@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path"
+	"strings"
 )
 
 var fusebitBase = `https://api.us-west-1.on.fusebit.io/v2/account/acc-3a72dea47d034728/subscription/sub-1d5ca7558f244bce/integration/nfnty-search`
@@ -50,7 +52,8 @@ func FusebitUserApps(ctx context.Context, sub string) (map[string]installInfo, e
 	}
 
 	if len(fusebitInstalls.Items) > 1 {
-		return nil, fmt.Errorf("too many installs found for tenant")
+		// TODO: need to handle when a user has multiple installs
+		//  return nil, fmt.Errorf("too many installs found for tenant")
 	}
 
 	installs := make(map[string]installInfo)
@@ -92,7 +95,9 @@ func FusebitStartSessionURL(ctx context.Context, connector string, sub string, r
 		Tags: map[string]string{
 			"fusebit.tenantId": toFusebitTenantID(sub),
 		},
-		Components: []string{connector},
+		Components: []string{
+			connector,
+		},
 	}
 
 	body := bytes.NewBuffer(nil)
@@ -156,7 +161,7 @@ func FusebitStartSessionCommit(ctx context.Context, sessionID string) error {
 type FusebitSessionRequest struct {
 	RedirectURL string            `json:"redirectUrl"`
 	Tags        map[string]string `json:"tags"`
-	Components  []string          `json:"-"`
+	Components  []string          `json:"components"`
 }
 
 type FusebitSessionResponse struct {
@@ -164,8 +169,13 @@ type FusebitSessionResponse struct {
 }
 
 func FusebitAccessToken(ctx context.Context, connector string, tenantID string) (string, error) {
-	tenantID = toFusebitTenantID(tenantID)
-	u := fusebitBase + "/api/connector/" + connector + "/tenant/" + url.PathEscape(tenantID)
+	if !strings.HasPrefix(connector, "connectors/") {
+		return "", fmt.Errorf("connector must be a connector name, not a connector id")
+	}
+	tenant := "tenants/" + url.PathEscape(toFusebitTenantID(tenantID))
+
+	// when url.JoinPath is available, use that instead
+	u := fusebitBase + path.Join("/api/", connector, tenant)
 
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
