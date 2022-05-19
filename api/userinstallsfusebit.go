@@ -168,12 +168,12 @@ type FusebitSessionResponse struct {
 }
 
 func FusebitAccessToken(ctx context.Context, connector string, tenantID string) (string, error) {
-	tenantID = toFusebitTenantID(tenantID)
-	if !strings.HasPrefix(connector, "connectors") {
+	if !strings.HasPrefix(connector, "connectors/") {
 		return "", fmt.Errorf("connector must be a connector name, not a connector id")
 	}
+	tenant := "tenants/" + url.PathEscape(toFusebitTenantID(tenantID))
 
-	u := fusebitBase + "/api/" + connector + "/tenants/" + url.PathEscape(tenantID)
+	u := fusebitBase + "/api/" + connector + "/" + tenant
 
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
