@@ -36,6 +36,8 @@ const ConnectorItems = ({
               p: 2,
               cursor: 'pointer',
               position: 'relative',
+              maxWidth: '200px',
+              minWidth: '200px',
             }}
             onClick={() =>
               handleExternal(
@@ -65,7 +67,16 @@ const ConnectorItems = ({
               </>
             )}
             <CardContent sx={{ textAlign: 'center' }}>
-              <Avatar src={connector.logo} sx={{ width: 64, height: 64, mx: 'auto', mb: 2 }} />
+              <Avatar
+                imgProps={{
+                  sx: {
+                    width: '100%',
+                    height: 'auto',
+                  },
+                }}
+                src={connector.logo}
+                sx={{ width: 64, height: 64, mx: 'auto', mb: 2 }}
+              />
               <Typography variant={'h5'} component={'h2'}>
                 {connector.display_name}
               </Typography>
