@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -173,7 +174,7 @@ func FusebitAccessToken(ctx context.Context, connector string, tenantID string) 
 	}
 	tenant := "tenants/" + url.PathEscape(toFusebitTenantID(tenantID))
 
-	u := fusebitBase + "/api/" + connector + "/" + tenant
+	u := fusebitBase + path.Join("/api/", connector, tenant)
 
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
