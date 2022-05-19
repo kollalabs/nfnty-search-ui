@@ -94,7 +94,9 @@ func FusebitStartSessionURL(ctx context.Context, connector string, sub string, r
 		Tags: map[string]string{
 			"fusebit.tenantId": toFusebitTenantID(sub),
 		},
-		Components: []string{connector, strings.ReplaceAll(connector, "connectors/", "connector-")},
+		Components: []string{
+			connector,
+			strings.ReplaceAll(connector, "connectors/", "connector-")}, // TODO: remove once the Fusebit integration has the updated component names
 	}
 
 	body := bytes.NewBuffer(nil)
