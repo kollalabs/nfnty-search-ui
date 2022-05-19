@@ -5,7 +5,7 @@ const authConfig: any = {
   domain: 'infinitysearch.us.auth0.com',
   redirectUri: `${window.location.origin}/auth-callback`,
   scope: 'openid profile email',
-  useRefreshTokens: true
-}
+  useRefreshTokens: true,
+};
 
-export { authConfig }
+export { authConfig };
