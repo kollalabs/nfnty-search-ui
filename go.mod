@@ -5,7 +5,7 @@ go 1.18
 require (
 	cloud.google.com/go/datastore v1.6.0
 	github.com/envoyproxy/protoc-gen-validate v0.6.7
-	go.einride.tech/aip v0.54.1
+	go.einride.tech/aip v0.55.0
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/api v0.75.0
@@ -27,5 +27,5 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/grpc v1.45.0 // indirect
+	google.golang.org/grpc v1.47.0 // indirect
 )
