@@ -41,10 +41,21 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: remove this
-	sub := r.URL.Query().Get("sub")
+	// TODO: use stateful storage on our end to validate user using the state parameter
+	state := r.URL.Query().Get("state")
+	if state == "" {
+		http.Error(w, "state is required", http.StatusBadRequest)
+		return
+	}
+	// decode the state
+	query, err := url.ParseQuery(state)
+	if err != nil {
+		http.Error(w, "state is invalid", http.StatusBadRequest)
+		return
+	}
+	sub := query.Get("sub")
 	if sub == "" {
-		http.Error(w, "sub is required", http.StatusBadRequest)
+		http.Error(w, "unable to determine sub", http.StatusBadRequest)
 		return
 	}
 
