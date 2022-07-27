@@ -51,15 +51,14 @@ var configs = map[string]connectorConfig{
 			MarketplaceURL: "https://jobnimbus.kolla.market/",
 			SearchHandler:  jobNimbusSearch,
 		},
-		AuthProvider: providerOAuth,
-		Audience:     "https://data.job-nimbus.program.kolla.dev",
+		Audience: "https://jobnimbus.data.kolla.dev",
 		AuthInfo: oauth2.Config{
 			ClientID:     os.Getenv("JN_CLIENT_ID"),
 			ClientSecret: os.Getenv("JN_CLIENT_SECRET"),
 			Endpoint: oauth2.Endpoint{
-				AuthURL:   "https://k-job-nimbus.us.auth0.com/authorize",
-				TokenURL:  "https://k-job-nimbus.us.auth0.com/oauth/token",
 				AuthStyle: oauth2.AuthStyleInParams,
+				AuthURL:   "https://jobnimbus.oidc.kolla.market/oauth2/authorize",
+				TokenURL:  "https://jobnimbus.oidc.kolla.market/oauth2/token",
 			},
 			Scopes: []string{
 				"openid",
@@ -68,6 +67,7 @@ var configs = map[string]connectorConfig{
 				"read:schedules",
 			},
 		},
+		AuthProvider: providerOAuth,
 	},
 	"connectors/fluid": {
 		ConnectorInfo: connectorInfo{
@@ -78,8 +78,24 @@ var configs = map[string]connectorConfig{
 			MarketplaceURL: "https://fluid.kolla.market/",
 			SearchHandler:  fluidSearch,
 		},
-		Audience:     "https://data.fluid.program.kolla.dev",
-		AuthProvider: providerFusebit,
+		Audience: "https://fluid.data.kolla.dev",
+		AuthInfo: oauth2.Config{
+			ClientID:     os.Getenv("FLUID_CLIENT_ID"),
+			ClientSecret: os.Getenv("FLUID_CLIENT_SECRET"),
+			Endpoint: oauth2.Endpoint{
+				AuthStyle: oauth2.AuthStyleInParams,
+				AuthURL:   "https://fluid.oidc.kolla.market/oauth2/auth",
+				TokenURL:  "https://fluid.oidc.kolla.market/oauth/token",
+			},
+			Scopes: []string{
+				"openid",
+				"offline_access",
+				"data:contacts:read",
+				"data:users:read",
+				"data:orders:read",
+			},
+		},
+		AuthProvider: providerOAuth,
 	},
 }
 

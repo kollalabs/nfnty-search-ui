@@ -13,3 +13,8 @@
 `pnpm dev`
 
 Open http://localhost:3000
+
+
+### OAuth information
+
+Redirect URL: https://infinitysearch.xyz/api/installcallback
