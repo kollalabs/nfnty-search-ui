@@ -152,11 +152,11 @@ func oauthConnectURL(ctx context.Context, cfg connectorConfig, sub string) (stri
 	v.Set("sub", sub)
 	v.Set("target", cfg.ConnectorInfo.Name)
 	v.Set("auth_provider", cfg.AuthProvider)
-	u.RawQuery = v.Encode()
-	redirectURL := u.String()
 
 	var installURL string
 	if cfg.AuthProvider == providerFusebit {
+		u.RawQuery = v.Encode()
+		redirectURL := u.String()
 		installURL, err = FusebitStartSessionURL(ctx, cfg.ConnectorInfo.Name, sub, redirectURL)
 		if err != nil {
 			return "", err
@@ -170,6 +170,7 @@ func oauthConnectURL(ctx context.Context, cfg connectorConfig, sub string) (stri
 		codeOptions := []oauth2.AuthCodeOption{
 			oauth2.ApprovalForce, // force consent page to show everytime
 			oauth2.SetAuthURLParam("audience", cfg.Audience),
+			oauth2.SetAuthURLParam("state", v.Encode()),
 		}
 		installURL = a.AuthCodeURL("", codeOptions...)
 	}
