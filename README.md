@@ -16,5 +16,5 @@ Open http://localhost:3000
 
 ### OAuth information
 
-Install URL: https://infinitysearch.xyz/api/installurl?target={{target_name}}
+Install URL: https://infinitysearch.xyz/install?target={{target_name}}
 Redirect URL: https://infinitysearch.xyz/api/installcallback
