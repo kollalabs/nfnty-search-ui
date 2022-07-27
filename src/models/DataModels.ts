@@ -25,6 +25,7 @@ type Connector = {
   logo_small: string;
   connected: boolean;
   install_url: string;
+  marketplace_url: string
 };
 
 export type { Connector, Connection, ConnectionDetails, ConnectionMeta };
