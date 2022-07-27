@@ -41,7 +41,7 @@ const ConnectorItems = ({
             }}
             onClick={() =>
               handleExternal(
-                'https://jobnimbus.kolla.market/build/apps/wuv6u4oesbdalgoygino2k2hjm/landing'
+                connector.marketplace_url,
               )
             }
           >
