@@ -29,19 +29,6 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// target is the connector the callback is intended for
-	target := r.URL.Query().Get("target")
-	if target == "" {
-		http.Error(w, "target is required", http.StatusBadRequest)
-		return
-	}
-
-	cfg, ok := configs[target]
-	if !ok {
-		http.Error(w, "unknown target", http.StatusBadRequest)
-		return
-	}
-
 	// TODO: use stateful storage on our end to validate user using the state parameter
 	state := r.URL.Query().Get("state")
 	if state == "" {
@@ -52,6 +39,19 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	query, err := url.ParseQuery(state)
 	if err != nil {
 		http.Error(w, "state is invalid", http.StatusBadRequest)
+		return
+	}
+
+	// target is the connector the callback is intended for
+	target := query.Get("target")
+	if target == "" {
+		http.Error(w, "target is required", http.StatusBadRequest)
+		return
+	}
+
+	cfg, ok := configs[target]
+	if !ok {
+		http.Error(w, "unknown target", http.StatusBadRequest)
 		return
 	}
 	sub := query.Get("sub")
