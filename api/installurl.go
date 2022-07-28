@@ -85,7 +85,7 @@ var configs = map[string]connectorConfig{
 			Endpoint: oauth2.Endpoint{
 				AuthStyle: oauth2.AuthStyleInParams,
 				AuthURL:   "https://fluid.oidc.kolla.market/oauth2/auth",
-				TokenURL:  "https://fluid.oidc.kolla.market/oauth/token",
+				TokenURL:  "https://fluid.oidc.kolla.market/oauth2/token",
 			},
 			Scopes: []string{
 				"openid",
