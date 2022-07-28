@@ -170,9 +170,8 @@ func oauthConnectURL(ctx context.Context, cfg connectorConfig, sub string) (stri
 		codeOptions := []oauth2.AuthCodeOption{
 			oauth2.ApprovalForce, // force consent page to show everytime
 			oauth2.SetAuthURLParam("audience", cfg.Audience),
-			oauth2.SetAuthURLParam("state", v.Encode()),
 		}
-		installURL = a.AuthCodeURL("", codeOptions...)
+		installURL = a.AuthCodeURL(v.Encode(), codeOptions...)
 	}
 	return installURL, nil
 }
