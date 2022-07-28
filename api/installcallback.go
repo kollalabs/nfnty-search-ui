@@ -24,7 +24,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	// catch any generic errors the auth provider has returned
 	errorResponse := r.URL.Query().Get("error")
 	if errorResponse != "" {
-		msg := errorResponse + " " + html.EscapeString(r.URL.Query().Get("error_description"))
+		msg := html.EscapeString(errorResponse + " " + r.URL.Query().Get("error_description"))
 		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
