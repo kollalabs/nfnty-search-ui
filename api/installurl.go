@@ -90,9 +90,9 @@ var configs = map[string]connectorConfig{
 			Scopes: []string{
 				"openid",
 				"offline_access",
-				"data:contacts:read",
-				"data:users:read",
-				"data:orders:read",
+				// "data:contacts:read",
+				// "data:users:read",
+				// "data:orders:read",
 			},
 		},
 		AuthProvider: providerOAuth,
