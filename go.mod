@@ -6,9 +6,9 @@ require (
 	cloud.google.com/go/datastore v1.8.0
 	github.com/envoyproxy/protoc-gen-validate v0.6.7
 	go.einride.tech/aip v0.54.1
-	golang.org/x/oauth2 v0.0.0-20220622183110-fd043fe589d2
+	golang.org/x/oauth2 v0.0.0-20220822191816-0ebed06d0094
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
-	google.golang.org/api v0.88.0
+	google.golang.org/api v0.95.0
 	google.golang.org/genproto v0.0.0-20220624142145-8cd45d7dbd1f
 	google.golang.org/protobuf v1.28.0
 )
