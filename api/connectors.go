@@ -47,14 +47,9 @@ func ConnectorsHandler(w http.ResponseWriter, r *http.Request) {
 
 		for i, v := range list {
 			cfg := configs[v.Name]
-			v.MarketplaceURL = cfg.ConnectorInfo.MarketplaceURL
+			v.MarketplaceURL = cfg.MarketplaceURL
 			// link that the user can click on to initiate the target connection
 			// oauth login flow
-			v.InstallURL, err = oauthConnectURL(ctx, cfg, sub)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
 			list[i] = v
 		}
 	}
@@ -65,7 +60,6 @@ func ConnectorsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(resp)
-
 }
 
 func mergeConnected(ctx context.Context, sub string, list []Connector) error {
@@ -90,12 +84,10 @@ func mergeConnected(ctx context.Context, sub string, list []Connector) error {
 func connectors() []Connector {
 	list := []Connector{}
 	for _, v := range configs {
-		info := v.ConnectorInfo
 		list = append(list, Connector{
-			Name:        info.Name,
-			DisplayName: info.DisplayName,
-			Logo:        info.Logo,
-			LogoSmall:   info.LogoSmall,
+			Name:           v.Name,
+			DisplayName:    v.DisplayName,
+			MarketplaceURL: v.MarketplaceURL,
 		})
 	}
 

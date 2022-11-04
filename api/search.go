@@ -7,12 +7,15 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/kollalabs/nfnty-search-ui/api/jobnimbusclient"
 	"golang.org/x/oauth2"
 	"google.golang.org/protobuf/encoding/protojson"
 )
+
+var connectAPIKey = os.Getenv("KOLLA_CONNECT_API_KEY")
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
@@ -56,9 +59,9 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 		if !ok {
 			continue
 		}
-		f := cfg.ConnectorInfo.SearchHandler
+		f := cfg.SearchHandler
 
-		ts, err := install.TokenSource(ctx)
+		ts, err := NewTokenSource(ctx, connectAPIKey, cfg.Name, sub)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("unable to to get token source [%s] [%s]", install.ConnectorName, err), http.StatusInternalServerError)
 			return
@@ -102,10 +105,6 @@ func jobNimbusSearch(ctx context.Context, cfg connectorConfig, ts oauth2.TokenSo
 		"filter":    []string{filter},
 		"page_size": []string{"5"},
 	}
-
-	// TODO: this whole refresh token blob needs to be extracted into a more
-	// general place
-	// TODO: we should only have access to a static token source here
 
 	u := jobNimbusMediatorURL + "/v1/contacts?" + v.Encode()
 	req, err := http.NewRequest(http.MethodGet, u, nil)

@@ -2,66 +2,68 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
+	"net/url"
+	"strings"
 
-	"cloud.google.com/go/datastore"
-	"go.einride.tech/aip/resourceid"
-	"golang.org/x/oauth2"
 	"golang.org/x/sync/errgroup"
-	"google.golang.org/api/option"
 )
 
-// manage user installs through one of two strategies
-// the first is to self-manage the user tokans and signup process
-// the second is to use Fusebit to manage the user tokens and signup process
-
-// placeholder handler for Vercel
+// UserInstallHandler is a placeholder for Vercel
 func UserInstallHandler(w http.ResponseWriter, r *http.Request) {}
 
-const (
-	datastoreTokenKind = "OAuthToken"
-	datastoreProjectID = "infinity-search-339422"
-)
-
-var defaultDataStore struct {
-	client *datastore.Client
+type installInfo struct {
+	ConnectorName string
+	Active        bool
 }
 
-func init() {
-
-	ctx := context.Background()
-	client, err := datastoreClient(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defaultDataStore.client = client
-}
-
-// userApps returns a list of all of a user's installed connectors, across both
-// our own self managed tokens and Fusebit
+// userApps returns a list of all of a user's installed connectors
+// from Kolla Connect
 func userApps(ctx context.Context, sub string) (map[string]installInfo, error) {
 	wg := errgroup.Group{}
 
 	grpA := make(map[string]installInfo)
-	grpB := make(map[string]installInfo)
-
 	wg.Go(func() error {
-		var err error
-		grpA, err = datastoreUserApps(ctx, sub)
-		if err != nil {
-			return fmt.Errorf("unable to load apps from group a %w", err)
+		filter := "state = 'ACTIVE' AND consumer_id = '" + sub + "'"
+		v := url.Values{
+			"filter": []string{filter},
 		}
-		return nil
-	})
-	wg.Go(func() error {
-		var err error
-		grpB, err = FusebitUserApps(ctx, sub)
+		u := "https://connect.getkolla.com/v1/connectors/-/linkedaccounts" + v.Encode()
+		req, _ := http.NewRequest(http.MethodGet, u, nil)
+		req.Header.Set("Authorization", connectAPIKey)
+
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
-			return fmt.Errorf("unable to load apps from group b %w", err)
+			return err
+		}
+		if resp.StatusCode != http.StatusOK {
+			return fmt.Errorf("failed to load linked accounts: [%d]", resp.StatusCode)
+		}
+		type linkedAccountListResponse struct {
+			LinkedAccounts []struct {
+				Name       string `json:"name"`
+				State      string `json:"state"`
+				ConsumerID string `json:"consumer_id"`
+			} `json:"linked_accounts"`
+		}
+		var list linkedAccountListResponse
+		err = json.NewDecoder(resp.Body).Decode(&list)
+		if err != nil {
+			return err
+		}
+		for _, v := range list.LinkedAccounts {
+			c, ok := grpA[v.Name]
+			if ok && c.Active {
+				continue
+			}
+			parts := strings.Split(v.Name, "/")
+			connector := parts[0] + "/" + parts[1]
+			grpA[v.Name] = installInfo{
+				ConnectorName: connector,
+				Active:        v.State == "ACTIVE",
+			}
 		}
 		return nil
 	})
@@ -71,102 +73,5 @@ func userApps(ctx context.Context, sub string) (map[string]installInfo, error) {
 		return nil, err
 	}
 
-	// merge the results together, prefer fusebit tokens over our own
-	// (merge fusebit into group A)
-	for k, v := range grpB {
-		grpA[k] = v
-	}
 	return grpA, nil
-
-}
-
-func datastoreClient(ctx context.Context) (*datastore.Client, error) {
-	if defaultDataStore.client != nil {
-		return defaultDataStore.client, nil
-	}
-
-	credsJSON := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
-
-	options := []option.ClientOption{}
-	if credsJSON != "" {
-		options = append(options, option.WithCredentialsJSON([]byte(credsJSON)))
-	}
-
-	// Create a datastore client. In a typical application, you would create
-	// a single client which is reused for every datastore operation.
-	dsClient, err := datastore.NewClient(ctx, datastoreProjectID, options...)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return dsClient, nil
-}
-
-func datastoreUserApps(ctx context.Context, sub string) (map[string]installInfo, error) {
-	dsClient, err := datastoreClient(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get client: %w", err)
-	}
-
-	query := datastore.NewQuery(datastoreTokenKind).Filter("InfinitySearchUser =", sub).Order("-Expiry")
-
-	var results []installInfo
-	_, err = dsClient.GetAll(ctx, query, &results)
-	if err != nil {
-		return nil, err
-	}
-
-	// grab the first token we see for each connector
-	agg := make(map[string]installInfo)
-	for _, v := range results {
-		_, ok := agg[v.ConnectorName]
-		if ok {
-			continue
-		}
-		agg[v.ConnectorName] = v
-	}
-
-	return agg, nil
-}
-
-func datastoreSaveUserToken(ctx context.Context, t *installInfo) error {
-
-	key := resourceid.NewSystemGeneratedBase32()
-
-	// kind, name, parent
-	k := datastore.NameKey(datastoreTokenKind, key, nil)
-
-	if _, err := defaultDataStore.client.Put(ctx, k, t); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (i *installInfo) TokenSource(ctx context.Context) (oauth2.TokenSource, error) {
-	cfg, ok := configs[i.ConnectorName]
-	if !ok {
-		return nil, fmt.Errorf("no config for %s", i.ConnectorName)
-	}
-
-	tokenSource := cfg.AuthInfo.TokenSource(ctx, i.Token)
-	token, err := tokenSource.Token()
-	if err != nil {
-		return nil, err
-	}
-	// check if access token or refresh token have been rotated
-	if token.RefreshToken != i.RefreshToken || token.AccessToken != i.AccessToken {
-		i.AccessToken = token.AccessToken
-		i.RefreshToken = token.RefreshToken
-		i.Expiry = token.Expiry
-
-		err := datastoreSaveUserToken(ctx, i)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	ts := oauth2.StaticTokenSource(token)
-
-	return ts, nil
 }
