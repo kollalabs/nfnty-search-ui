@@ -14,11 +14,6 @@ import (
 // UserInstallHandler is a placeholder for Vercel
 func UserInstallHandler(w http.ResponseWriter, r *http.Request) {}
 
-const (
-	datastoreTokenKind = "OAuthToken"
-	datastoreProjectID = "infinity-search-339422"
-)
-
 type installInfo struct {
 	ConnectorName string
 	Active        bool
