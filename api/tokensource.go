@@ -65,6 +65,8 @@ func (k *TokenSource) refreshToken() error {
 	if err != nil {
 		return err
 	}
+	resp.Header.Set("Authorization", k.apiKey)
+
 	defer resp.Body.Close()
 	if resp.Response.StatusCode >= 300 {
 		return fmt.Errorf("unable to load remote credentials code [%d]", resp.Response.StatusCode)
