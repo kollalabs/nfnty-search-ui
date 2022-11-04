@@ -13,7 +13,7 @@ import (
 )
 
 // TokenSourceHandler is a placeholder for Vercel
-func TokenSourceHandler(w http.ResponseWriter, r *http.Response) {
+func TokenSourceHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 const expiryOffset = time.Second * 5
