@@ -13,7 +13,6 @@ import (
 
 func main() {
 	http.DefaultServeMux.HandleFunc("/api/connectors", api.ConnectorsHandler)
-	http.DefaultServeMux.HandleFunc("/api/installcallback", api.CallbackHandler)
 	http.DefaultServeMux.HandleFunc("/api/installurl", api.InstallURLHandler)
 	http.DefaultServeMux.HandleFunc("/api/search", api.SearchHandler)
 

@@ -8,17 +8,12 @@ import (
 	"os"
 
 	"cloud.google.com/go/datastore"
-	"go.einride.tech/aip/resourceid"
 	"golang.org/x/oauth2"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
 )
 
-// manage user installs through one of two strategies
-// the first is to self-manage the user tokans and signup process
-// the second is to use Fusebit to manage the user tokens and signup process
-
-// placeholder handler for Vercel
+// UserInstallHandler is a placeholder for Vercel
 func UserInstallHandler(w http.ResponseWriter, r *http.Request) {}
 
 const (
@@ -41,27 +36,26 @@ func init() {
 	defaultDataStore.client = client
 }
 
-// userApps returns a list of all of a user's installed connectors, across both
-// our own self managed tokens and Fusebit
+type installInfo struct {
+	*oauth2.Token
+	IDToken string
+	Scopes  []string
+
+	ConnectorName      string
+	InfinitySearchUser string
+}
+
+// userApps returns a list of all of a user's installed connectors
+// from Kolla Connect
 func userApps(ctx context.Context, sub string) (map[string]installInfo, error) {
 	wg := errgroup.Group{}
 
 	grpA := make(map[string]installInfo)
-	grpB := make(map[string]installInfo)
-
 	wg.Go(func() error {
 		var err error
 		grpA, err = datastoreUserApps(ctx, sub)
 		if err != nil {
 			return fmt.Errorf("unable to load apps from group a %w", err)
-		}
-		return nil
-	})
-	wg.Go(func() error {
-		var err error
-		grpB, err = FusebitUserApps(ctx, sub)
-		if err != nil {
-			return fmt.Errorf("unable to load apps from group b %w", err)
 		}
 		return nil
 	})
@@ -71,13 +65,7 @@ func userApps(ctx context.Context, sub string) (map[string]installInfo, error) {
 		return nil, err
 	}
 
-	// merge the results together, prefer fusebit tokens over our own
-	// (merge fusebit into group A)
-	for k, v := range grpB {
-		grpA[k] = v
-	}
 	return grpA, nil
-
 }
 
 func datastoreClient(ctx context.Context) (*datastore.Client, error) {
@@ -108,7 +96,7 @@ func datastoreUserApps(ctx context.Context, sub string) (map[string]installInfo,
 		return nil, fmt.Errorf("unable to get client: %w", err)
 	}
 
-	query := datastore.NewQuery(datastoreTokenKind).Filter("InfinitySearchUser =", sub).Order("-Expiry")
+	query := datastore.NewQuery(datastoreTokenKind).FilterField("InfinitySearchUser", "=", sub).Order("-Expiry")
 
 	var results []installInfo
 	_, err = dsClient.GetAll(ctx, query, &results)
@@ -127,46 +115,4 @@ func datastoreUserApps(ctx context.Context, sub string) (map[string]installInfo,
 	}
 
 	return agg, nil
-}
-
-func datastoreSaveUserToken(ctx context.Context, t *installInfo) error {
-
-	key := resourceid.NewSystemGeneratedBase32()
-
-	// kind, name, parent
-	k := datastore.NameKey(datastoreTokenKind, key, nil)
-
-	if _, err := defaultDataStore.client.Put(ctx, k, t); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (i *installInfo) TokenSource(ctx context.Context) (oauth2.TokenSource, error) {
-	cfg, ok := configs[i.ConnectorName]
-	if !ok {
-		return nil, fmt.Errorf("no config for %s", i.ConnectorName)
-	}
-
-	tokenSource := cfg.AuthInfo.TokenSource(ctx, i.Token)
-	token, err := tokenSource.Token()
-	if err != nil {
-		return nil, err
-	}
-	// check if access token or refresh token have been rotated
-	if token.RefreshToken != i.RefreshToken || token.AccessToken != i.AccessToken {
-		i.AccessToken = token.AccessToken
-		i.RefreshToken = token.RefreshToken
-		i.Expiry = token.Expiry
-
-		err := datastoreSaveUserToken(ctx, i)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	ts := oauth2.StaticTokenSource(token)
-
-	return ts, nil
 }
