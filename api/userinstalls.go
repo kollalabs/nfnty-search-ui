@@ -2,13 +2,15 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
 
 	"cloud.google.com/go/datastore"
-	"golang.org/x/oauth2"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
 )
@@ -37,12 +39,8 @@ func init() {
 }
 
 type installInfo struct {
-	*oauth2.Token
-	IDToken string
-	Scopes  []string
-
-	ConnectorName      string
-	InfinitySearchUser string
+	ConnectorName string
+	Active        bool
 }
 
 // userApps returns a list of all of a user's installed connectors
@@ -52,10 +50,44 @@ func userApps(ctx context.Context, sub string) (map[string]installInfo, error) {
 
 	grpA := make(map[string]installInfo)
 	wg.Go(func() error {
-		var err error
-		grpA, err = datastoreUserApps(ctx, sub)
+		filter := "state = 'ACTIVE' AND consumer_id = '" + sub + "'"
+		v := url.Values{
+			"filter": []string{filter},
+		}
+		u := "https://connect.getkolla.com/v1/connectors/-/linkedaccounts" + v.Encode()
+		req, _ := http.NewRequest(http.MethodGet, u, nil)
+		req.Header.Set("Authorization", connectAPIKey)
+
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
-			return fmt.Errorf("unable to load apps from group a %w", err)
+			return err
+		}
+		if resp.StatusCode != http.StatusOK {
+			return fmt.Errorf("failed to load linked accounts: [%d]", resp.StatusCode)
+		}
+		type linkedAccountListResponse struct {
+			LinkedAccounts []struct {
+				Name       string `json:"name"`
+				State      string `json:"state"`
+				ConsumerID string `json:"consumer_id"`
+			} `json:"linked_accounts"`
+		}
+		var list linkedAccountListResponse
+		err = json.NewDecoder(resp.Body).Decode(&list)
+		if err != nil {
+			return err
+		}
+		for _, v := range list.LinkedAccounts {
+			c, ok := grpA[v.Name]
+			if ok && c.Active {
+				continue
+			}
+			parts := strings.Split(v.Name, "/")
+			connector := parts[0] + "/" + parts[1]
+			grpA[v.Name] = installInfo{
+				ConnectorName: connector,
+				Active:        v.State == "ACTIVE",
+			}
 		}
 		return nil
 	})

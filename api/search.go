@@ -106,10 +106,6 @@ func jobNimbusSearch(ctx context.Context, cfg connectorConfig, ts oauth2.TokenSo
 		"page_size": []string{"5"},
 	}
 
-	// TODO: this whole refresh token blob needs to be extracted into a more
-	// general place
-	// TODO: we should only have access to a static token source here
-
 	u := jobNimbusMediatorURL + "/v1/contacts?" + v.Encode()
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
